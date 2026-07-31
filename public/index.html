@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <title>RatioMap — les meilleurs, au bon ratio</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="layout">
+  <main class="app">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i></span>
+      <div class="brand-text">
+        <span class="brand-name">Ratio<span class="brand-name-accent">Map</span></span>
+        <span class="brand-tagline">Les meilleurs, au bon ratio</span>
+      </div>
+    </div>
+
+    <form id="search-form">
+      <div class="search-bar-wrap">
+        <div class="search-bar">
+          <span class="search-bar-icon" aria-hidden="true">⌕</span>
+          <input id="query-input" type="text" placeholder="Dentiste, restaurant, plombier…" autocomplete="off" required />
+          <button id="geolocate-btn" type="button" class="locate-btn" aria-label="Utiliser ma position">
+            <span aria-hidden="true">◎</span>
+          </button>
+        </div>
+        <ul id="query-suggestions" class="query-suggestions" hidden></ul>
+      </div>
+
+      <div class="chip-row">
+        <label class="chip chip-input">
+          <span class="chip-icon" aria-hidden="true">📍</span>
+          <input id="address-input" type="text" placeholder="Adresse, ville, code postal" autocomplete="off" />
+        </label>
+        <label class="chip chip-select">
+          <span class="chip-icon" aria-hidden="true">⤢</span>
+          <select id="radius-input">
+            <option value="1000">1 km</option>
+            <option value="2000">2 km</option>
+            <option value="5000" selected>5 km</option>
+            <option value="10000">10 km</option>
+            <option value="20000">20 km</option>
+            <option value="30000">30 km</option>
+            <option value="50000">50 km</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="chip-row">
+        <div id="city-tags-input" class="chip chip-tags tags-input">
+          <span class="chip-icon" aria-hidden="true">🏙</span>
+          <input id="city-input" type="text" placeholder="Ville ou département (91, 75…) — 3 max" autocomplete="off" />
+        </div>
+      </div>
+
+      <button id="search-btn" type="submit" class="search-submit">Rechercher</button>
+    </form>
+
+    <section id="status" class="status" hidden></section>
+
+    <div id="controls-row" class="controls-row">
+      <div id="sort-row" class="chip-row" hidden>
+        <label class="chip chip-select" title="Trier par">
+          <span class="chip-icon" aria-hidden="true">⇅</span>
+          <select id="sort-select">
+            <option value="score" selected>Ratio</option>
+            <option value="rating">Note</option>
+            <option value="reviewCount">Avis</option>
+          </select>
+        </label>
+      </div>
+
+      <div id="filter-row" class="chip-row" hidden>
+        <div class="chip chip-range" title="Nombre d'avis">
+          <span class="chip-icon" aria-hidden="true">💬</span>
+          <input id="reviews-min" type="number" min="0" step="1" placeholder="Min" />
+          <span class="range-sep">–</span>
+          <input id="reviews-max" type="number" min="0" step="1" placeholder="Max" />
+        </div>
+        <div class="chip chip-range" title="Note">
+          <span class="chip-icon" aria-hidden="true">⭐</span>
+          <input id="rating-min" type="number" min="0" max="5" step="1" placeholder="Min" />
+          <span class="range-sep">–</span>
+          <input id="rating-max" type="number" min="0" max="5" step="1" placeholder="Max" />
+        </div>
+        <label class="chip chip-select" title="Statut d'ouverture">
+          <span class="chip-icon" aria-hidden="true">🕓</span>
+          <select id="open-filter">
+            <option value="all" selected>Tous</option>
+            <option value="open">Ouvert</option>
+            <option value="closed">Fermé</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <section id="results" class="results"></section>
+
+    <section id="place-detail" class="place-detail" hidden>
+      <button id="detail-back" type="button" class="detail-back">
+        <span aria-hidden="true">‹</span> Retour aux résultats
+      </button>
+
+      <div class="detail-body">
+        <h2 id="detail-name" class="detail-name"></h2>
+
+        <div class="detail-rating">
+          <span id="detail-rating-value" class="detail-rating-value"></span>
+          <span id="detail-stars" class="detail-stars" aria-hidden="true"></span>
+          <span id="detail-review-count" class="detail-review-count"></span>
+          <button type="button" id="detail-rating-info" class="detail-rating-info" aria-label="Voir les avis">ⓘ</button>
+        </div>
+
+        <div id="detail-category" class="detail-category"></div>
+
+        <div class="detail-tabs" role="tablist">
+          <button type="button" class="detail-tab is-active" data-tab="overview">Présentation</button>
+          <button type="button" class="detail-tab" data-tab="reviews">Avis</button>
+          <button type="button" class="detail-tab" data-tab="about">À propos</button>
+        </div>
+
+        <div id="detail-tab-overview" class="detail-tab-panel">
+          <div class="detail-actions">
+            <a id="detail-action-directions" class="detail-action" target="_blank" rel="noopener">
+              <span class="detail-action-icon" aria-hidden="true">➤</span>
+              <span>Itinéraire</span>
+            </a>
+            <a id="detail-action-call" class="detail-action" hidden>
+              <span class="detail-action-icon" aria-hidden="true">☎</span>
+              <span>Appeler</span>
+            </a>
+            <a id="detail-action-website" class="detail-action" target="_blank" rel="noopener" hidden>
+              <span class="detail-action-icon" aria-hidden="true">🌐</span>
+              <span>Site web</span>
+            </a>
+            <a id="detail-open-link" class="detail-action" target="_blank" rel="noopener">
+              <span class="detail-action-icon" aria-hidden="true">↗</span>
+              <span>Google Maps</span>
+            </a>
+          </div>
+
+          <ul class="detail-info-list">
+            <li id="detail-row-address" class="detail-info-row" hidden>
+              <span class="detail-info-icon" aria-hidden="true">📍</span>
+              <span id="detail-address" class="detail-info-text"></span>
+            </li>
+            <li id="detail-row-hours" class="detail-info-row" hidden>
+              <span class="detail-info-icon" aria-hidden="true">🕓</span>
+              <div class="detail-info-text">
+                <span id="detail-open-status" class="detail-open-status"></span>
+                <ul id="detail-hours-list" class="detail-hours-list"></ul>
+              </div>
+            </li>
+            <li id="detail-row-phone" class="detail-info-row" hidden>
+              <span class="detail-info-icon" aria-hidden="true">☎</span>
+              <a id="detail-phone" class="detail-info-text detail-info-link"></a>
+            </li>
+            <li id="detail-row-website" class="detail-info-row" hidden>
+              <span class="detail-info-icon" aria-hidden="true">🌐</span>
+              <a id="detail-website" class="detail-info-text detail-info-link" target="_blank" rel="noopener"></a>
+            </li>
+          </ul>
+        </div>
+
+        <div id="detail-tab-reviews" class="detail-tab-panel" hidden>
+          <p id="detail-reviews-empty" class="detail-reviews-empty" hidden>Aucun avis disponible.</p>
+          <ul id="detail-reviews-list" class="detail-reviews-list"></ul>
+        </div>
+
+        <div id="detail-tab-about" class="detail-tab-panel" hidden>
+          <ul class="detail-info-list">
+            <li class="detail-info-row">
+              <span class="detail-info-icon" aria-hidden="true">🏷</span>
+              <span id="detail-about-category" class="detail-info-text"></span>
+            </li>
+            <li id="detail-about-row-address" class="detail-info-row" hidden>
+              <span class="detail-info-icon" aria-hidden="true">📍</span>
+              <span id="detail-about-address" class="detail-info-text"></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="map-pane">
+    <div id="map" class="map"></div>
+  </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
