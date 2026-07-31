@@ -9,6 +9,7 @@ const cityInput = document.getElementById('city-input');
 const cityTagsContainer = document.getElementById('city-tags-input');
 const filterToggleBtn = document.getElementById('filter-toggle');
 const filterPanelEl = document.getElementById('filter-panel');
+const shareBtn = document.getElementById('share-btn');
 const sortSelect = document.getElementById('sort-select');
 const reviewsMinInput = document.getElementById('reviews-min');
 const reviewsMaxInput = document.getElementById('reviews-max');
@@ -640,10 +641,17 @@ function renderResults(places) {
   updateDisplay();
 }
 
-sortSelect.addEventListener('change', updateDisplay);
-openFilterInput.addEventListener('change', updateDisplay);
+// Après une recherche, on garde l'URL synchronisée avec le tri/filtres actifs
+// (sans polluer l'historique de navigation, contrairement à une recherche).
+function updateDisplayAndSyncUrl() {
+  updateDisplay();
+  syncUrl(false);
+}
+
+sortSelect.addEventListener('change', updateDisplayAndSyncUrl);
+openFilterInput.addEventListener('change', updateDisplayAndSyncUrl);
 [reviewsMinInput, reviewsMaxInput, ratingMinInput, ratingMaxInput].forEach((input) => {
-  input.addEventListener('input', updateDisplay);
+  input.addEventListener('input', updateDisplayAndSyncUrl);
 });
 
 // --- Autocomplete du champ de recherche (liste locale, sans appel réseau) ---
@@ -763,6 +771,64 @@ function getQuery() {
   return query;
 }
 
+// --- URL partageable : reflète la recherche courante pour pouvoir la
+// bookmarker/partager telle quelle, et la restaurer à l'ouverture du lien.
+
+function buildSearchParams() {
+  if (!searchCenter) return null;
+
+  const params = new URLSearchParams({
+    q: queryInput.value.trim(),
+    lat: searchCenter.lat,
+    lng: searchCenter.lng,
+    radius: radiusInput.value,
+    sort: sortSelect.value,
+  });
+
+  if (selectedCities.length) params.set('city', selectedCities.join(','));
+  if (addressInput.value.trim()) params.set('address', addressInput.value.trim());
+  if (reviewsMinInput.value) params.set('reviewsMin', reviewsMinInput.value);
+  if (reviewsMaxInput.value) params.set('reviewsMax', reviewsMaxInput.value);
+  if (ratingMinInput.value) params.set('ratingMin', ratingMinInput.value);
+  if (ratingMaxInput.value) params.set('ratingMax', ratingMaxInput.value);
+  if (openFilterInput.value !== 'all') params.set('open', openFilterInput.value);
+
+  return params;
+}
+
+function syncUrl(push) {
+  const params = buildSearchParams();
+  if (!params) return;
+
+  const url = `${window.location.pathname}?${params}`;
+  if (push) {
+    window.history.pushState(null, '', url);
+  } else {
+    window.history.replaceState(null, '', url);
+  }
+}
+
+shareBtn.addEventListener('click', async () => {
+  const params = buildSearchParams();
+  if (!params) return;
+
+  const shareUrl = `${window.location.origin}${window.location.pathname}?${params}`;
+
+  try {
+    await navigator.clipboard.writeText(shareUrl);
+    shareBtn.classList.add('is-active');
+    const label = shareBtn.querySelector('span');
+    const previous = label.textContent;
+    label.textContent = 'Lien copié';
+    setTimeout(() => {
+      label.textContent = previous;
+      shareBtn.classList.remove('is-active');
+    }, 1500);
+  } catch {
+    setStatus("Impossible de copier le lien, copie-le depuis la barre d'adresse.", true);
+  }
+});
+
 async function searchPlaces(lat, lng) {
   const query = getQuery();
   if (!query) return;
@@ -787,6 +853,7 @@ async function searchPlaces(lat, lng) {
     }
 
     renderResults(data.places);
+    syncUrl(true);
   } finally {
     searchLoadingEl.hidden = true;
     resultsEl.hidden = false;
@@ -912,6 +979,35 @@ async function initAutocomplete() {
   } catch (err) {
     console.warn("Autocomplete indisponible :", err.message);
   }
+
+  restoreSearchFromUrl();
+}
+
+// Relance automatiquement la recherche encodée dans l'URL (lien partagé),
+// une fois la carte prête pour que les pins s'affichent dès le premier rendu.
+function restoreSearchFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const lat = params.get('lat');
+  const lng = params.get('lng');
+  const q = params.get('q');
+  if (!lat || !lng || !q) return;
+
+  queryInput.value = q;
+  if (params.get('address')) addressInput.value = params.get('address');
+  if (params.get('radius')) radiusInput.value = params.get('radius');
+  if (params.get('sort')) sortSelect.value = params.get('sort');
+  if (params.get('reviewsMin')) reviewsMinInput.value = params.get('reviewsMin');
+  if (params.get('reviewsMax')) reviewsMaxInput.value = params.get('reviewsMax');
+  if (params.get('ratingMin')) ratingMinInput.value = params.get('ratingMin');
+  if (params.get('ratingMax')) ratingMaxInput.value = params.get('ratingMax');
+  if (params.get('open')) openFilterInput.value = params.get('open');
+
+  const city = params.get('city');
+  if (city) {
+    city.split(',').forEach((c) => addCity(c));
+  }
+
+  searchPlaces(lat, lng);
 }
 
 function loadGoogleMapsScript(apiKey) {
