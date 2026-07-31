@@ -1,6 +1,8 @@
 require('dotenv').config();
 const path = require('path');
+const crypto = require('crypto');
 const express = require('express');
+const { getStore } = require('@netlify/blobs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,6 +27,77 @@ if (!BROWSER_KEY) {
 }
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.json());
+
+// --- Liens courts pour la recherche partagée ---
+// Netlify Blobs en production ; repli en mémoire en local (node server.js
+// direct, hors environnement Netlify) où Blobs n'est pas disponible.
+const memoryShortLinks = new Map();
+
+function getShortLinkStore() {
+  try {
+    return getStore('short-links');
+  } catch {
+    return null;
+  }
+}
+
+function generateShortId() {
+  return crypto.randomBytes(6).toString('base64url').slice(0, 7);
+}
+
+async function saveShortLink(id, data) {
+  const store = getShortLinkStore();
+  if (store) {
+    try {
+      await store.setJSON(id, data);
+      return;
+    } catch {
+      // Repli mémoire ci-dessous si Blobs échoue pour une raison quelconque.
+    }
+  }
+  memoryShortLinks.set(id, data);
+}
+
+async function loadShortLink(id) {
+  const store = getShortLinkStore();
+  if (store) {
+    try {
+      const data = await store.get(id, { type: 'json' });
+      if (data) return data;
+    } catch {
+      // Repli mémoire ci-dessous.
+    }
+  }
+  return memoryShortLinks.get(id) || null;
+}
+
+app.post('/api/shorten', async (req, res) => {
+  try {
+    const params = req.body;
+    if (!params || typeof params !== 'object' || Array.isArray(params)) {
+      return res.status(400).json({ error: 'Corps de requête invalide' });
+    }
+
+    const id = generateShortId();
+    await saveShortLink(id, params);
+    res.json({ id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/s/:id', async (req, res) => {
+  try {
+    const data = await loadShortLink(req.params.id);
+    if (!data) return res.redirect('/');
+
+    const params = new URLSearchParams(data);
+    res.redirect(`/?${params}`);
+  } catch {
+    res.redirect('/');
+  }
+});
 
 // Constante de confiance et note moyenne a priori pour le score bayésien.
 // Rien n'est exclu : un lieu sans avis retombe simplement sur cette moyenne.

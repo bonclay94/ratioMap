@@ -812,7 +812,21 @@ shareBtn.addEventListener('click', async () => {
   const params = buildSearchParams();
   if (!params) return;
 
-  const shareUrl = `${window.location.origin}${window.location.pathname}?${params}`;
+  // Lien court via /api/shorten ; repli sur le lien long complet si ça échoue.
+  let shareUrl = `${window.location.origin}${window.location.pathname}?${params}`;
+  try {
+    const res = await fetch('/api/shorten', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(Object.fromEntries(params)),
+    });
+    if (res.ok) {
+      const { id } = await res.json();
+      shareUrl = `${window.location.origin}/s/${id}`;
+    }
+  } catch {
+    // Le lien long reste une solution de repli fonctionnelle.
+  }
 
   try {
     await navigator.clipboard.writeText(shareUrl);
