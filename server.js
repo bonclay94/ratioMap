@@ -35,6 +35,22 @@ function bayesianScore(rating, reviewCount) {
   return (reviewCount * rating + PRIOR_COUNT * PRIOR_MEAN) / (reviewCount + PRIOR_COUNT);
 }
 
+// Distance en mètres entre deux points (formule de Haversine). Le paramètre
+// "radius" de Google Text Search n'est qu'une préférence, pas une limite
+// stricte : Google renvoie parfois des résultats plus loin quand la zone est
+// peu fournie. On applique donc nous-mêmes la coupe exacte, pour que les pins
+// correspondent toujours au cercle affiché sur la carte.
+function distanceMeters(lat1, lng1, lat2, lng2) {
+  const R = 6371000;
+  const toRad = (deg) => (deg * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
+
 async function geocodeAddress(address) {
   const url = new URL('https://maps.googleapis.com/maps/api/geocode/json');
   url.searchParams.set('address', address);
@@ -319,14 +335,21 @@ app.get('/api/search', async (req, res) => {
       raw = await fetchNearbyPlaces(lat, lng, radius, q.trim());
     }
 
-    // Filtre de sécurité : élimine les résultats hors ville/département que
-    // Google renvoie parfois malgré la requête orientée.
+    // Filtres de sécurité : élimine les résultats hors ville/département que
+    // Google renvoie parfois malgré la requête orientée, et (hors mode
+    // ville/département) ceux au-delà du rayon réellement choisi.
+    const radiusMeters = Number(radius);
     const places = raw
       .filter((p) => p.business_status !== 'CLOSED_PERMANENTLY')
       .filter(
         (p) =>
           !cities.length || cities.some((c) => matchesLocationFilter(p.formatted_address, c))
       )
+      .filter((p) => {
+        if (cities.length || !p.geometry?.location) return true;
+        const { lat: pLat, lng: pLng } = p.geometry.location;
+        return distanceMeters(Number(lat), Number(lng), pLat, pLng) <= radiusMeters;
+      })
       .map((p) => {
         const rating = p.rating || 0;
         const reviewCount = p.user_ratings_total || 0;
