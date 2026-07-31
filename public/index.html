@@ -21,10 +21,12 @@
     <form id="search-form">
       <div class="search-bar-wrap">
         <div class="search-bar">
-          <span class="search-bar-icon" aria-hidden="true">⌕</span>
+          <span class="search-bar-icon" aria-hidden="true">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="9" r="6"/><line x1="13.5" y1="13.5" x2="18" y2="18"/></svg>
+          </span>
           <input id="query-input" type="text" placeholder="Dentiste, restaurant, plombier…" autocomplete="off" required />
           <button id="geolocate-btn" type="button" class="locate-btn" aria-label="Utiliser ma position">
-            <span aria-hidden="true">◎</span>
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10" cy="10" r="5.5"/><circle cx="10" cy="10" r="1.4" fill="currentColor" stroke="none"/><line x1="10" y1="1" x2="10" y2="3.6"/><line x1="10" y1="16.4" x2="10" y2="19"/><line x1="1" y1="10" x2="3.6" y2="10"/><line x1="16.4" y1="10" x2="19" y2="10"/></svg>
           </button>
         </div>
         <ul id="query-suggestions" class="query-suggestions" hidden></ul>
@@ -32,11 +34,15 @@
 
       <div class="chip-row">
         <label class="chip chip-input">
-          <span class="chip-icon" aria-hidden="true">📍</span>
+          <span class="chip-icon" aria-hidden="true">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M10 18s6-6.4 6-10.4A6 6 0 1 0 4 7.6C4 11.6 10 18 10 18Z"/><circle cx="10" cy="7.5" r="2"/></svg>
+          </span>
           <input id="address-input" type="text" placeholder="Adresse, ville, code postal" autocomplete="off" />
         </label>
         <label class="chip chip-select">
-          <span class="chip-icon" aria-hidden="true">⤢</span>
+          <span class="chip-icon" aria-hidden="true">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7" stroke-dasharray="2.6 2.6"/><circle cx="10" cy="10" r="1.6" fill="currentColor" stroke="none"/></svg>
+          </span>
           <select id="radius-input">
             <option value="1000">1 km</option>
             <option value="2000">2 km</option>
@@ -51,7 +57,9 @@
 
       <div class="chip-row">
         <div id="city-tags-input" class="chip chip-tags tags-input">
-          <span class="chip-icon" aria-hidden="true">🏙</span>
+          <span class="chip-icon" aria-hidden="true">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><rect x="3" y="8" width="6" height="10"/><rect x="11" y="3" width="6" height="15"/></svg>
+          </span>
           <input id="city-input" type="text" placeholder="Ville ou département (91, 75…) — 3 max" autocomplete="off" />
         </div>
       </div>
@@ -61,47 +69,58 @@
 
     <section id="status" class="status" hidden></section>
 
-    <div id="controls-row" class="controls-row">
-      <div id="sort-row" class="chip-row" hidden>
-        <label class="chip chip-select" title="Trier par">
-          <span class="chip-icon" aria-hidden="true">⇅</span>
-          <select id="sort-select">
-            <option value="score" selected>Ratio</option>
-            <option value="rating">Note</option>
-            <option value="reviewCount">Avis</option>
-          </select>
-        </label>
-      </div>
+    <div id="controls-row" class="controls-row" hidden>
+      <label class="chip chip-select" title="Trier par">
+        <span class="chip-icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3v14M6 3 3 6M6 3l3 3"/><path d="M14 17V3M14 17l-3-3M14 17l3-3"/></svg>
+        </span>
+        <select id="sort-select">
+          <option value="score" selected>Ratio</option>
+          <option value="rating">Note</option>
+          <option value="reviewCount">Avis</option>
+        </select>
+      </label>
+      <button type="button" id="filter-toggle" class="control-toggle" aria-expanded="false" aria-controls="filter-panel" title="Filtrer">
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4h14l-5.5 6.3v5.2L9.5 17v-6.7L3 4Z"/></svg>
+        <span>Filtrer</span>
+      </button>
+    </div>
 
-      <div id="filter-row" class="chip-row" hidden>
-        <div class="chip chip-range" title="Nombre d'avis">
-          <span class="chip-icon" aria-hidden="true">💬</span>
-          <input id="reviews-min" type="number" min="0" step="1" placeholder="Min" />
-          <span class="range-sep">–</span>
-          <input id="reviews-max" type="number" min="0" step="1" placeholder="Max" />
-        </div>
-        <div class="chip chip-range" title="Note">
-          <span class="chip-icon" aria-hidden="true">⭐</span>
-          <input id="rating-min" type="number" min="0" max="5" step="1" placeholder="Min" />
-          <span class="range-sep">–</span>
-          <input id="rating-max" type="number" min="0" max="5" step="1" placeholder="Max" />
-        </div>
-        <label class="chip chip-select" title="Statut d'ouverture">
-          <span class="chip-icon" aria-hidden="true">🕓</span>
-          <select id="open-filter">
-            <option value="all" selected>Tous</option>
-            <option value="open">Ouvert</option>
-            <option value="closed">Fermé</option>
-          </select>
-        </label>
+    <div id="filter-panel" class="control-panel" hidden>
+      <div class="chip chip-range" title="Nombre d'avis">
+        <span class="chip-icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 4h14v9H8l-4 3v-3H3V4Z"/></svg>
+        </span>
+        <input id="reviews-min" type="number" min="0" step="1" placeholder="Min" />
+        <span class="range-sep">–</span>
+        <input id="reviews-max" type="number" min="0" step="1" placeholder="Max" />
       </div>
+      <div class="chip chip-range" title="Note">
+        <span class="chip-icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20" fill="currentColor" stroke="none"><path d="M10 2.3l2.24 4.54 5.01.73-3.63 3.53.86 5-4.48-2.36-4.48 2.36.86-5-3.63-3.53 5.01-.73L10 2.3Z"/></svg>
+        </span>
+        <input id="rating-min" type="number" min="0" max="5" step="1" placeholder="Min" />
+        <span class="range-sep">–</span>
+        <input id="rating-max" type="number" min="0" max="5" step="1" placeholder="Max" />
+      </div>
+      <label class="chip chip-select" title="Statut d'ouverture">
+        <span class="chip-icon" aria-hidden="true">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.2"/><path d="M10 5.8V10l2.8 1.8"/></svg>
+        </span>
+        <select id="open-filter">
+          <option value="all" selected>Tous</option>
+          <option value="open">Ouvert</option>
+          <option value="closed">Fermé</option>
+        </select>
+      </label>
     </div>
 
     <section id="results" class="results"></section>
 
     <section id="place-detail" class="place-detail" hidden>
       <button id="detail-back" type="button" class="detail-back">
-        <span aria-hidden="true">‹</span> Retour aux résultats
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.5 4 6.5 10l6 6"/></svg>
+        Retour aux résultats
       </button>
 
       <div class="detail-body">
@@ -111,7 +130,9 @@
           <span id="detail-rating-value" class="detail-rating-value"></span>
           <span id="detail-stars" class="detail-stars" aria-hidden="true"></span>
           <span id="detail-review-count" class="detail-review-count"></span>
-          <button type="button" id="detail-rating-info" class="detail-rating-info" aria-label="Voir les avis">ⓘ</button>
+          <button type="button" id="detail-rating-info" class="detail-rating-info" aria-label="Voir les avis">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7.2"/><line x1="10" y1="9" x2="10" y2="14"/><circle cx="10" cy="6.3" r="0.9" fill="currentColor" stroke="none"/></svg>
+          </button>
         </div>
 
         <div id="detail-category" class="detail-category"></div>
@@ -125,41 +146,57 @@
         <div id="detail-tab-overview" class="detail-tab-panel">
           <div class="detail-actions">
             <a id="detail-action-directions" class="detail-action" target="_blank" rel="noopener">
-              <span class="detail-action-icon" aria-hidden="true">➤</span>
+              <span class="detail-action-icon" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M10 2 3 17l7-3.5L17 17 10 2Z"/></svg>
+              </span>
               <span>Itinéraire</span>
             </a>
             <a id="detail-action-call" class="detail-action" hidden>
-              <span class="detail-action-icon" aria-hidden="true">☎</span>
+              <span class="detail-action-icon" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M4 3h3l1.3 3.6L7 8.2a10 10 0 0 0 4.8 4.8l1.6-1.3L17 13v3c0 1-.9 1.8-1.9 1.6C8.7 16.6 3.4 11.3 2.4 4.9 2.2 3.9 3 3 4 3Z"/></svg>
+              </span>
               <span>Appeler</span>
             </a>
             <a id="detail-action-website" class="detail-action" target="_blank" rel="noopener" hidden>
-              <span class="detail-action-icon" aria-hidden="true">🌐</span>
+              <span class="detail-action-icon" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="10" r="7.2"/><ellipse cx="10" cy="10" rx="3" ry="7.2"/><line x1="2.9" y1="10" x2="17.1" y2="10"/></svg>
+              </span>
               <span>Site web</span>
             </a>
             <a id="detail-open-link" class="detail-action" target="_blank" rel="noopener">
-              <span class="detail-action-icon" aria-hidden="true">↗</span>
+              <span class="detail-action-icon" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4H4v12h12v-4"/><path d="M11 2h7v7"/><path d="M18 2 9.5 10.5"/></svg>
+              </span>
               <span>Google Maps</span>
             </a>
           </div>
 
           <ul class="detail-info-list">
             <li id="detail-row-address" class="detail-info-row" hidden>
-              <span class="detail-info-icon" aria-hidden="true">📍</span>
+              <span class="detail-info-icon" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M10 18s6-6.4 6-10.4A6 6 0 1 0 4 7.6C4 11.6 10 18 10 18Z"/><circle cx="10" cy="7.5" r="2"/></svg>
+              </span>
               <span id="detail-address" class="detail-info-text"></span>
             </li>
             <li id="detail-row-hours" class="detail-info-row" hidden>
-              <span class="detail-info-icon" aria-hidden="true">🕓</span>
+              <span class="detail-info-icon" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="10" r="7.2"/><path d="M10 5.8V10l2.8 1.8"/></svg>
+              </span>
               <div class="detail-info-text">
                 <span id="detail-open-status" class="detail-open-status"></span>
                 <ul id="detail-hours-list" class="detail-hours-list"></ul>
               </div>
             </li>
             <li id="detail-row-phone" class="detail-info-row" hidden>
-              <span class="detail-info-icon" aria-hidden="true">☎</span>
+              <span class="detail-info-icon" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M4 3h3l1.3 3.6L7 8.2a10 10 0 0 0 4.8 4.8l1.6-1.3L17 13v3c0 1-.9 1.8-1.9 1.6C8.7 16.6 3.4 11.3 2.4 4.9 2.2 3.9 3 3 4 3Z"/></svg>
+              </span>
               <a id="detail-phone" class="detail-info-text detail-info-link"></a>
             </li>
             <li id="detail-row-website" class="detail-info-row" hidden>
-              <span class="detail-info-icon" aria-hidden="true">🌐</span>
+              <span class="detail-info-icon" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="10" cy="10" r="7.2"/><ellipse cx="10" cy="10" rx="3" ry="7.2"/><line x1="2.9" y1="10" x2="17.1" y2="10"/></svg>
+              </span>
               <a id="detail-website" class="detail-info-text detail-info-link" target="_blank" rel="noopener"></a>
             </li>
           </ul>
@@ -173,11 +210,15 @@
         <div id="detail-tab-about" class="detail-tab-panel" hidden>
           <ul class="detail-info-list">
             <li class="detail-info-row">
-              <span class="detail-info-icon" aria-hidden="true">🏷</span>
+              <span class="detail-info-icon" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M3 3h6l8 8-6 6-8-8V3Z"/><circle cx="7" cy="7" r="1.2" fill="currentColor" stroke="none"/></svg>
+              </span>
               <span id="detail-about-category" class="detail-info-text"></span>
             </li>
             <li id="detail-about-row-address" class="detail-info-row" hidden>
-              <span class="detail-info-icon" aria-hidden="true">📍</span>
+              <span class="detail-info-icon" aria-hidden="true">
+                <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"><path d="M10 18s6-6.4 6-10.4A6 6 0 1 0 4 7.6C4 11.6 10 18 10 18Z"/><circle cx="10" cy="7.5" r="2"/></svg>
+              </span>
               <span id="detail-about-address" class="detail-info-text"></span>
             </li>
           </ul>

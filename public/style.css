@@ -60,6 +60,15 @@
   display: none !important;
 }
 
+/* Icônes SVG en ligne (aucun emoji dans l'app) : taille par défaut,
+   surchargée localement là où un contexte a besoin d'une autre taille. */
+svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: block;
+}
+
 html,
 body {
   height: 100%;
@@ -288,9 +297,12 @@ select:focus-visible {
 }
 
 .search-bar-icon {
-  font-size: 20px;
-  font-weight: 700;
   color: var(--text-tertiary);
+}
+
+.search-bar-icon svg {
+  width: 19px;
+  height: 19px;
 }
 
 .search-bar input {
@@ -315,12 +327,16 @@ select:focus-visible {
   border: none;
   background: var(--accent);
   color: var(--accent-contrast);
-  font-size: 17px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: filter 0.15s ease, transform 0.1s ease;
+}
+
+.locate-btn svg {
+  width: 18px;
+  height: 18px;
 }
 
 @media (hover: hover) {
@@ -362,14 +378,14 @@ select:focus-visible {
 }
 
 .chip-icon {
-  font-size: 14px;
+  display: flex;
   flex-shrink: 0;
+  color: var(--text-tertiary);
 }
 
-.chip-text {
-  flex-shrink: 0;
-  font-weight: 600;
-  color: var(--text-secondary);
+.chip-icon svg {
+  width: 14px;
+  height: 14px;
 }
 
 .chip-input {
@@ -581,39 +597,56 @@ select:focus-visible {
   color: var(--danger);
 }
 
-/* ---------- Refine controls (sort/filter) — distinct from the main form ---------- */
+/* ---------- Refine controls (sort/filter) — collapsible, icon-triggered ---------- */
 
 .controls-row {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
   gap: 8px;
   margin-top: 16px;
   padding-top: 12px;
-  padding-bottom: 2px;
   border-top: 1px solid var(--border);
 }
 
-#sort-row,
-#filter-row {
+.control-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 32px;
+  padding: 0 12px;
+  border: none;
+  border-radius: var(--radius-full);
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.control-toggle svg {
+  width: 15px;
+  height: 15px;
+}
+
+@media (hover: hover) {
+  .control-toggle:hover {
+    background: var(--border);
+  }
+}
+
+.control-toggle.is-active {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.control-panel {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 0;
+  margin-top: 10px;
 }
 
-.controls-row:has(#sort-row[hidden]),
-#controls-row[hidden] {
-  display: none;
-}
-
-#sort-row[hidden],
-#filter-row[hidden] {
-  display: none;
-}
-
-#sort-row .chip,
-#filter-row .chip {
+.controls-row .chip,
+.control-panel .chip {
   height: 32px;
   padding: 0 10px;
   gap: 5px;
@@ -622,16 +655,17 @@ select:focus-visible {
   box-shadow: none;
 }
 
-#sort-row .chip:focus-within,
-#filter-row .chip:focus-within {
+.controls-row .chip:focus-within,
+.control-panel .chip:focus-within {
   box-shadow: 0 0 0 2px var(--accent);
 }
 
-#sort-row .chip-select select {
+.controls-row .chip-select select,
+.control-panel .chip-select select {
   font-size: 13px;
 }
 
-#filter-row .chip-range input {
+.control-panel .chip-range input {
   width: 38px;
   padding: 4px 2px;
   font-size: 12px;
@@ -725,10 +759,6 @@ select:focus-visible {
   white-space: nowrap;
 }
 
-.score-detail .star {
-  color: var(--star);
-}
-
 /* ---------- Profil du lieu (façon fiche Google), dans la sidebar ---------- */
 
 .place-detail {
@@ -750,7 +780,7 @@ select:focus-visible {
   align-self: flex-start;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   border: none;
   background: var(--surface-2);
   color: var(--text);
@@ -759,6 +789,11 @@ select:focus-visible {
   padding: 8px 12px;
   border-radius: var(--radius-full);
   cursor: pointer;
+}
+
+.detail-back svg {
+  width: 15px;
+  height: 15px;
 }
 
 @media (hover: hover) {
@@ -789,9 +824,15 @@ select:focus-visible {
 }
 
 .detail-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
   color: var(--star);
-  font-size: 15px;
-  letter-spacing: 1px;
+}
+
+.detail-stars svg {
+  width: 13px;
+  height: 13px;
 }
 
 .detail-rating-value {
@@ -803,13 +844,17 @@ select:focus-visible {
 }
 
 .detail-rating-info {
+  display: flex;
   border: none;
   background: none;
   color: var(--text-tertiary);
-  font-size: 14px;
-  line-height: 1;
   padding: 0;
   cursor: pointer;
+}
+
+.detail-rating-info svg {
+  width: 15px;
+  height: 15px;
 }
 
 .detail-category {
@@ -879,7 +924,11 @@ select:focus-visible {
   border-radius: 50%;
   background: var(--accent-soft);
   color: var(--accent);
-  font-size: 17px;
+}
+
+.detail-action-icon svg {
+  width: 18px;
+  height: 18px;
 }
 
 @media (hover: hover) {
@@ -908,10 +957,14 @@ select:focus-visible {
 
 .detail-info-icon {
   flex-shrink: 0;
-  width: 18px;
+  display: flex;
   margin-top: 1px;
-  text-align: center;
   color: var(--text-tertiary);
+}
+
+.detail-info-icon svg {
+  width: 16px;
+  height: 16px;
 }
 
 .detail-info-text {
@@ -1007,10 +1060,16 @@ select:focus-visible {
 }
 
 .detail-review-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
   color: var(--star);
-  font-size: 12px;
-  letter-spacing: 1px;
   margin-top: 2px;
+}
+
+.detail-review-stars svg {
+  width: 12px;
+  height: 12px;
 }
 
 .detail-review-text {

@@ -4,12 +4,24 @@ const express = require('express');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Deux clés distinctes :
+// - API_KEY : utilisée uniquement côté serveur (Geocoding, Places...), jamais
+//   envoyée au navigateur. Peut rester sans restriction de referrer/IP.
+// - BROWSER_KEY : la seule exposée au client (chargement de Maps JavaScript
+//   API + Autocomplete). Doit être restreinte par référent HTTP à ton domaine
+//   dans Google Cloud Console, puisqu'elle est visible en clair côté navigateur.
 const API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+const BROWSER_KEY = process.env.GOOGLE_MAPS_BROWSER_KEY;
 
 if (!API_KEY) {
   console.error('GOOGLE_MAPS_API_KEY manquante. Copie .env.example vers .env et renseigne ta clé.');
   // En local uniquement : sur Netlify, une fonction ne doit pas tuer le process.
   if (require.main === module) process.exit(1);
+}
+
+if (!BROWSER_KEY) {
+  console.error('GOOGLE_MAPS_BROWSER_KEY manquante : la carte et l\'autocomplete ne pourront pas se charger côté navigateur.');
 }
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -132,10 +144,10 @@ async function fetchNearbyPlaces(lat, lng, radius, query) {
   return results;
 }
 
-// Clé exposée au navigateur pour charger l'autocomplete d'adresses (Maps JavaScript API).
-// À restreindre par référent HTTP dans Google Cloud Console.
+// Sert la clé "navigateur" (restreinte par référent HTTP), jamais la clé
+// serveur, pour charger la carte + l'autocomplete côté client.
 app.get('/api/config', (req, res) => {
-  res.json({ mapsApiKey: API_KEY });
+  res.json({ mapsApiKey: BROWSER_KEY || null });
 });
 
 const PLACE_DETAILS_FIELDS = [

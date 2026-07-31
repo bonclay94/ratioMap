@@ -6,9 +6,9 @@ const querySuggestionsEl = document.getElementById('query-suggestions');
 const addressInput = document.getElementById('address-input');
 const cityInput = document.getElementById('city-input');
 const cityTagsContainer = document.getElementById('city-tags-input');
-const sortRow = document.getElementById('sort-row');
+const filterToggleBtn = document.getElementById('filter-toggle');
+const filterPanelEl = document.getElementById('filter-panel');
 const sortSelect = document.getElementById('sort-select');
-const filterRow = document.getElementById('filter-row');
 const reviewsMinInput = document.getElementById('reviews-min');
 const reviewsMaxInput = document.getElementById('reviews-max');
 const ratingMinInput = document.getElementById('rating-min');
@@ -219,9 +219,17 @@ detailTabs.forEach((btn) => {
 
 detailRatingInfoBtn.addEventListener('click', () => setActiveTab('reviews'));
 
+const STAR_ICON_PATH = 'M10 2.3l2.24 4.54 5.01.73-3.63 3.53.86 5-4.48-2.36-4.48 2.36.86-5-3.63-3.53 5.01-.73L10 2.3Z';
+
+function starIcon(filled) {
+  const fill = filled ? 'currentColor' : 'none';
+  const opacity = filled ? '' : ' opacity="0.4"';
+  return `<svg viewBox="0 0 20 20" fill="${fill}" stroke="currentColor" stroke-width="1" stroke-linejoin="round"${opacity}><path d="${STAR_ICON_PATH}"/></svg>`;
+}
+
 function renderStars(rating) {
   const filled = Math.max(0, Math.min(5, Math.round(rating)));
-  return '★'.repeat(filled) + '☆'.repeat(5 - filled);
+  return Array.from({ length: 5 }, (_, i) => starIcon(i < filled)).join('');
 }
 
 function renderReviews(reviews) {
@@ -269,7 +277,7 @@ async function showPlaceDetail(index) {
   // Affichage immédiat avec ce qu'on a déjà (pas besoin d'attendre le réseau).
   renderReviews([]);
   detailNameEl.textContent = place.name;
-  detailStarsEl.textContent = renderStars(place.rating);
+  detailStarsEl.innerHTML = renderStars(place.rating);
   detailRatingValueEl.textContent = place.rating ? place.rating.toFixed(1) : '–';
   detailReviewCountEl.textContent = `(${place.reviewCount} avis)`;
   detailCategoryEl.textContent = '';
@@ -592,7 +600,7 @@ function updateDisplay() {
       </div>
       <div class="dentist-score">
         <div class="score-value">${p.score.toFixed(2)} / 5</div>
-        <div class="score-detail">${p.rating}<span class="star">★</span> · ${p.reviewCount} avis</div>
+        <div class="score-detail">${p.reviewCount} avis</div>
       </div>
     `;
 
@@ -604,10 +612,23 @@ function updateDisplay() {
   });
 }
 
+// Le filtre est replié derrière un bouton-icône ; le tri, lui, reste visible
+// directement dans la barre de contrôles.
+function toggleFilterPanel() {
+  const wasOpen = !filterPanelEl.hidden;
+  filterPanelEl.hidden = wasOpen;
+  filterToggleBtn.classList.toggle('is-active', !wasOpen);
+  filterToggleBtn.setAttribute('aria-expanded', String(!wasOpen));
+}
+
+filterToggleBtn.addEventListener('click', toggleFilterPanel);
+
 function renderResults(places) {
   currentPlaces = places;
-  sortRow.hidden = !places.length;
-  filterRow.hidden = !places.length;
+  controlsRowEl.hidden = !places.length;
+  filterPanelEl.hidden = true;
+  filterToggleBtn.classList.remove('is-active');
+  filterToggleBtn.setAttribute('aria-expanded', 'false');
   hidePlaceDetail();
   updateDisplay();
 }
