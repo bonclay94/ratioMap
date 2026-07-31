@@ -29,7 +29,7 @@ let searchCenter = null;
 let displayedPlaces = [];
 let mapsApiKey = null;
 
-const DEFAULT_PIN_COLOR = '#2f6feb';
+const DEFAULT_PIN_COLOR = '#ff5a3c';
 
 // Rond simple pour les résultats (taille normale), distinct du point de
 // position de l'utilisateur par sa couleur (contour blanc plus fin, pas de halo).

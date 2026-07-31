@@ -9,9 +9,9 @@
   --text-secondary: #5f6a7a;
   --text-tertiary: #99a2b0;
 
-  --accent: #2f6feb;
+  --accent: #ff5a3c;
   --accent-contrast: #ffffff;
-  --accent-soft: #e5edfd;
+  --accent-soft: #ffe4dc;
   --star: #f5a623;
   --success: #1e8e5a;
   --danger: #d93025;
@@ -36,9 +36,9 @@
     --text-secondary: #a7b0bd;
     --text-tertiary: #6f7885;
 
-    --accent: #5b9bff;
-    --accent-contrast: #0a1a33;
-    --accent-soft: #223454;
+    --accent: #ff8566;
+    --accent-contrast: #2b0d04;
+    --accent-soft: #432017;
     --star: #ffc247;
     --success: #4ade9a;
     --danger: #ff6b62;
