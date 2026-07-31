@@ -461,10 +461,16 @@ function renderMarkers(places) {
   map.fitBounds(bounds, 60);
 }
 
-function setStatus(message, isError = false) {
+function setStatus(message, isError = false, isLoading = false) {
   statusEl.hidden = !message;
-  statusEl.textContent = message;
   statusEl.classList.toggle('status-error', isError);
+  statusEl.classList.toggle('status-loading', isLoading);
+
+  if (isLoading) {
+    statusEl.innerHTML = `<span class="status-spinner" aria-hidden="true"></span>${message}`;
+  } else {
+    statusEl.textContent = message;
+  }
 }
 
 // --- Gestion des tags de villes (max 3) ---
@@ -764,7 +770,7 @@ async function searchPlaces(lat, lng) {
   updateRadiusCircle();
 
   const citiesLabel = selectedCities.length ? ` à ${selectedCities.join(', ')}` : ' autour de cette position';
-  setStatus(`Recherche de "${query}"${citiesLabel}…`);
+  setStatus(`Recherche de "${query}"${citiesLabel}…`, false, true);
   const radius = radiusInput.value;
 
   const params = new URLSearchParams({ lat, lng, radius, q: query });
@@ -786,7 +792,7 @@ document.getElementById('geolocate-btn').addEventListener('click', () => {
     return;
   }
 
-  setStatus('Localisation en cours…');
+  setStatus('Localisation en cours…', false, true);
 
   navigator.geolocation.getCurrentPosition(
     async (position) => {
@@ -827,7 +833,7 @@ document.getElementById('search-form').addEventListener('submit', async (e) => {
 
   try {
     if (address) {
-      setStatus('Localisation de l’adresse…');
+      setStatus('Localisation de l’adresse…', false, true);
       const geoRes = await fetch(`/api/geocode?address=${encodeURIComponent(address)}`);
       const geoData = await geoRes.json();
 
@@ -839,7 +845,7 @@ document.getElementById('search-form').addEventListener('submit', async (e) => {
     } else if (lastCoords) {
       await searchPlaces(lastCoords.lat, lastCoords.lng);
     } else if (selectedCities.length) {
-      setStatus(`Localisation de ${selectedCities[0]}…`);
+      setStatus(`Localisation de ${selectedCities[0]}…`, false, true);
       const geoRes = await fetch(`/api/geocode?address=${encodeURIComponent(selectedCities[0])}`);
       const geoData = await geoRes.json();
 
@@ -858,6 +864,15 @@ document.getElementById('search-form').addEventListener('submit', async (e) => {
 
 // --- Autocomplete Google Places sur les champs adresse et ville ---
 
+// Déduit le pays de l'appareil depuis la langue du navigateur (ex: "fr-FR"
+// -> "fr") pour limiter les suggestions au pays de l'utilisateur plutôt que
+// de proposer des adresses du monde entier. Repli sur la France par défaut.
+function getDeviceCountryCode() {
+  const locale = navigator.language || (navigator.languages && navigator.languages[0]) || '';
+  const region = locale.split('-')[1];
+  return region ? region.toLowerCase() : 'fr';
+}
+
 async function initAutocomplete() {
   try {
     const res = await fetch('/api/config');
@@ -868,8 +883,11 @@ async function initAutocomplete() {
     await loadGoogleMapsScript(mapsApiKey);
     initMap();
 
+    const countryCode = getDeviceCountryCode();
+
     const addressAutocomplete = new google.maps.places.Autocomplete(addressInput, {
       types: ['geocode'],
+      componentRestrictions: { country: countryCode },
     });
     addressAutocomplete.addListener('place_changed', () => {
       const place = addressAutocomplete.getPlace();
@@ -878,6 +896,7 @@ async function initAutocomplete() {
 
     const cityAutocomplete = new google.maps.places.Autocomplete(cityInput, {
       types: ['(cities)'],
+      componentRestrictions: { country: countryCode },
     });
     cityAutocomplete.addListener('place_changed', () => {
       const place = cityAutocomplete.getPlace();
