@@ -759,6 +759,18 @@ select:focus-visible {
   white-space: nowrap;
 }
 
+.score-star {
+  display: inline-flex;
+  margin: 0 1px;
+  color: var(--star);
+  vertical-align: -1px;
+}
+
+.score-star svg {
+  width: 11px;
+  height: 11px;
+}
+
 /* ---------- Profil du lieu (façon fiche Google), dans la sidebar ---------- */
 
 .place-detail {

@@ -600,7 +600,7 @@ function updateDisplay() {
       </div>
       <div class="dentist-score">
         <div class="score-value">${p.score.toFixed(2)} / 5</div>
-        <div class="score-detail">${p.reviewCount} avis</div>
+        <div class="score-detail">${p.rating.toFixed(1)}<span class="score-star" aria-hidden="true">${starIcon(true)}</span> · ${p.reviewCount} avis</div>
       </div>
     `;
 
