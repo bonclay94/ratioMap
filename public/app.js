@@ -1,4 +1,5 @@
 const statusEl = document.getElementById('status');
+const searchLoadingEl = document.getElementById('search-loading');
 const resultsEl = document.getElementById('results');
 const radiusInput = document.getElementById('radius-input');
 const queryInput = document.getElementById('query-input');
@@ -769,21 +770,27 @@ async function searchPlaces(lat, lng) {
   searchCenter = { lat: Number(lat), lng: Number(lng) };
   updateRadiusCircle();
 
-  const citiesLabel = selectedCities.length ? ` à ${selectedCities.join(', ')}` : ' autour de cette position';
-  setStatus(`Recherche de "${query}"${citiesLabel}…`, false, true);
+  setStatus('');
+  resultsEl.hidden = true;
+  searchLoadingEl.hidden = false;
   const radius = radiusInput.value;
 
   const params = new URLSearchParams({ lat, lng, radius, q: query });
   if (selectedCities.length) params.set('city', selectedCities.join(','));
 
-  const res = await fetch(`/api/search?${params}`);
-  const data = await res.json();
+  try {
+    const res = await fetch(`/api/search?${params}`);
+    const data = await res.json();
 
-  if (!res.ok) {
-    throw new Error(data.error || 'Erreur lors de la recherche');
+    if (!res.ok) {
+      throw new Error(data.error || 'Erreur lors de la recherche');
+    }
+
+    renderResults(data.places);
+  } finally {
+    searchLoadingEl.hidden = true;
+    resultsEl.hidden = false;
   }
-
-  renderResults(data.places);
 }
 
 document.getElementById('geolocate-btn').addEventListener('click', () => {
