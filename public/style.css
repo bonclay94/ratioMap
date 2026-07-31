@@ -1128,3 +1128,29 @@ select:focus-visible {
   line-height: 1.5;
   color: var(--text);
 }
+
+/* ---------- Footer (mentions légales) ---------- */
+
+.app-footer {
+  margin-top: 24px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.footer-link {
+  color: var(--text-tertiary);
+  text-decoration: none;
+}
+
+.footer-link:hover {
+  color: var(--text-secondary);
+  text-decoration: underline;
+}
+
+.footer-sep {
+  color: var(--text-tertiary);
+}
