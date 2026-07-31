@@ -1132,13 +1132,16 @@ select:focus-visible {
 /* ---------- Footer (mentions légales) ---------- */
 
 .app-footer {
-  margin-top: 24px;
+  /* Sticky footer : reste collé en bas quand le contenu est court, suit le
+     scroll normalement quand la liste dépasse la hauteur visible. */
+  margin-top: auto;
   padding-top: 14px;
   border-top: 1px solid var(--border);
   display: flex;
   justify-content: center;
   gap: 8px;
   font-size: 12px;
+  flex-shrink: 0;
 }
 
 .footer-link {
