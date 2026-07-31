@@ -8,7 +8,8 @@ const API_KEY = process.env.GOOGLE_MAPS_API_KEY;
 
 if (!API_KEY) {
   console.error('GOOGLE_MAPS_API_KEY manquante. Copie .env.example vers .env et renseigne ta clé.');
-  process.exit(1);
+  // En local uniquement : sur Netlify, une fonction ne doit pas tuer le process.
+  if (require.main === module) process.exit(1);
 }
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -338,6 +339,13 @@ app.get('/api/search', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`bestRatings lancé sur http://localhost:${PORT}`);
-});
+// `npm start` en local lance le serveur ; sur Netlify, ce fichier est requis
+// tel quel par la fonction serverless (netlify/functions/api.js) sans jamais
+// appeler listen().
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`bestRatings lancé sur http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
