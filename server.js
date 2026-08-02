@@ -187,7 +187,9 @@ function extractPostalCode(address) {
 function matchesLocationFilter(address, rawFilter) {
   const filter = rawFilter.trim();
 
-  if (/^\d{2,3}$/.test(filter)) {
+  // 2-3 chiffres = code département (91, 75...), 5 chiffres = code postal
+  // complet (75001...), utile pour cibler un arrondissement parisien.
+  if (/^\d{2,5}$/.test(filter)) {
     const postal = extractPostalCode(address);
     return postal !== null && postal.startsWith(filter);
   }
@@ -281,6 +283,29 @@ function guessCategory(types) {
   if (match) return TYPE_LABELS[match];
   const first = (types || []).find((t) => t !== 'point_of_interest' && t !== 'establishment');
   return first ? first.replace(/_/g, ' ') : null;
+}
+
+// Texte de recherche enrichi pour le filtre mots-clés : la Text Search
+// initiale ne renvoie ni avis ni description, il faut donc un appel Place
+// Details (payant) par résultat quand un filtre mots-clés est actif.
+async function fetchPlaceSearchableText(placeId) {
+  try {
+    const url = new URL('https://maps.googleapis.com/maps/api/place/details/json');
+    url.searchParams.set('place_id', placeId);
+    url.searchParams.set('fields', 'name,types,reviews');
+    url.searchParams.set('language', 'fr');
+    url.searchParams.set('key', API_KEY);
+
+    const apiRes = await fetch(url);
+    const data = await apiRes.json();
+    if (data.status !== 'OK') return '';
+
+    const r = data.result;
+    const reviewsText = (r.reviews || []).map((rev) => rev.text || '').join(' ');
+    return `${r.name || ''} ${(r.types || []).join(' ')} ${reviewsText}`;
+  } catch {
+    return '';
+  }
 }
 
 app.get('/api/place-details', async (req, res) => {
@@ -382,7 +407,7 @@ const MAX_CITIES = 3;
 
 app.get('/api/search', async (req, res) => {
   try {
-    const { lat, lng, radius = 5000, q, city } = req.query;
+    const { lat, lng, radius = 5000, q, city, keywords } = req.query;
     if (!lat || !lng) {
       return res.status(400).json({ error: 'Paramètres lat et lng requis' });
     }
@@ -441,7 +466,28 @@ app.get('/api/search', async (req, res) => {
       })
       .sort((a, b) => b.score - a.score);
 
-    res.json({ count: places.length, places });
+    // Filtre mots-clés (optionnel) : cherche dans le nom, la catégorie et les
+    // avis Google (5 derniers) de chaque résultat, via un appel Place Details
+    // supplémentaire par restaurant — payant et plus lent, donc uniquement
+    // déclenché quand l'utilisateur a explicitement renseigné des mots-clés.
+    const keywordList = keywords
+      ? keywords.split(',').map((k) => normalize(k.trim())).filter(Boolean)
+      : [];
+
+    let finalPlaces = places;
+    if (keywordList.length) {
+      const withText = await Promise.all(
+        places.map(async (p) => ({
+          place: p,
+          haystack: normalize(`${p.name} ${await fetchPlaceSearchableText(p.placeId)}`),
+        }))
+      );
+      finalPlaces = withText
+        .filter(({ haystack }) => keywordList.some((k) => haystack.includes(k)))
+        .map(({ place }) => place);
+    }
+
+    res.json({ count: finalPlaces.length, places: finalPlaces });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

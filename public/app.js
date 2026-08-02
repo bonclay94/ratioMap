@@ -16,10 +16,21 @@ const reviewsMaxInput = document.getElementById('reviews-max');
 const ratingMinInput = document.getElementById('rating-min');
 const ratingMaxInput = document.getElementById('rating-max');
 const openFilterInput = document.getElementById('open-filter');
+const keywordInput = document.getElementById('keyword-input');
+const keywordTagsContainer = document.getElementById('keyword-tags-input');
 
 const MAX_CITIES = 3;
 const DEPARTMENT_PATTERN = /^\d{2,3}$/;
+// Accepte "1er", "15e", "Paris 1er", "Paris 15ème"... et les convertit en
+// code postal (75001, 75015...) pour réutiliser le filtrage par préfixe déjà
+// en place côté serveur.
+const ARRONDISSEMENT_PATTERN = /^(?:paris\s+)?(\d{1,2})\s*(?:er|ème|eme|e)$/i;
+// Regroupe tous les cas qu'il faut intercepter avant que l'autocomplete
+// Google (qui n'a aucune suggestion pour ces formats) n'avale la touche Entrée.
+const CITY_HOTKEY_PATTERN = /^(?:\d{2,5}|(?:paris\s+)?\d{1,2}\s*(?:er|ème|eme|e))$/i;
+const MAX_KEYWORDS = 5;
 let selectedCities = [];
+let selectedKeywords = [];
 let lastCoords = null;
 let currentPlaces = [];
 
@@ -493,8 +504,17 @@ function renderCityTags() {
   cityInput.placeholder = atLimit ? '' : 'Ajouter une ville…';
 }
 
+function normalizeCityInput(rawName) {
+  const trimmed = rawName.trim();
+  const arrMatch = trimmed.match(ARRONDISSEMENT_PATTERN);
+  if (!arrMatch) return trimmed;
+  const n = Number(arrMatch[1]);
+  if (n < 1 || n > 20) return trimmed;
+  return `75${String(n).padStart(3, '0')}`;
+}
+
 function addCity(rawName) {
-  const name = rawName.trim();
+  const name = normalizeCityInput(rawName);
   if (!name) return;
   if (selectedCities.length >= MAX_CITIES) return;
   if (selectedCities.some((c) => c.toLowerCase() === name.toLowerCase())) {
@@ -522,7 +542,7 @@ function removeCity(name) {
 cityInput.addEventListener(
   'keydown',
   (e) => {
-    if (e.key === 'Enter' && /^\d{2,3}$/.test(cityInput.value.trim())) {
+    if (e.key === 'Enter' && CITY_HOTKEY_PATTERN.test(cityInput.value.trim())) {
       e.preventDefault();
       e.stopImmediatePropagation();
       addCity(cityInput.value);
@@ -537,6 +557,63 @@ cityInput.addEventListener('keydown', (e) => {
     addCity(cityInput.value);
   } else if (e.key === 'Backspace' && !cityInput.value && selectedCities.length) {
     removeCity(selectedCities[selectedCities.length - 1]);
+  }
+});
+
+// --- Gestion des tags de mots-clés (max 5) ---
+// Contrairement aux autres filtres du panneau (qui re-filtrent juste les
+// résultats déjà en mémoire), un mot-clé déclenche une nouvelle recherche :
+// le matching se fait côté serveur sur nom + catégorie + avis Google, ce qui
+// nécessite un appel Place Details par résultat (voir /api/search).
+
+function renderKeywordTags() {
+  keywordTagsContainer.querySelectorAll('.city-tag').forEach((tag) => tag.remove());
+
+  selectedKeywords.forEach((keyword) => {
+    const tag = document.createElement('span');
+    tag.className = 'city-tag';
+    tag.innerHTML = `${keyword} <button type="button" class="city-tag-remove" aria-label="Retirer ${keyword}">×</button>`;
+    tag.querySelector('.city-tag-remove').addEventListener('click', () => removeKeyword(keyword));
+    keywordTagsContainer.insertBefore(tag, keywordInput);
+  });
+
+  const atLimit = selectedKeywords.length >= MAX_KEYWORDS;
+  keywordInput.hidden = atLimit;
+  keywordInput.placeholder = atLimit ? '' : 'Mot-clé (buffet, volonté…) — 5 max';
+}
+
+function addKeyword(rawKeyword) {
+  const keyword = rawKeyword.trim();
+  if (!keyword) return;
+  if (selectedKeywords.length >= MAX_KEYWORDS) return;
+  if (selectedKeywords.some((k) => k.toLowerCase() === keyword.toLowerCase())) {
+    keywordInput.value = '';
+    return;
+  }
+
+  selectedKeywords.push(keyword);
+  keywordInput.value = '';
+  renderKeywordTags();
+  rerunSearchIfActive();
+}
+
+function removeKeyword(keyword) {
+  selectedKeywords = selectedKeywords.filter((k) => k !== keyword);
+  renderKeywordTags();
+  rerunSearchIfActive();
+}
+
+function rerunSearchIfActive() {
+  if (!searchCenter) return;
+  searchPlaces(searchCenter.lat, searchCenter.lng);
+}
+
+keywordInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    addKeyword(keywordInput.value);
+  } else if (e.key === 'Backspace' && !keywordInput.value && selectedKeywords.length) {
+    removeKeyword(selectedKeywords[selectedKeywords.length - 1]);
   }
 });
 
@@ -792,6 +869,7 @@ function buildSearchParams() {
   if (ratingMinInput.value) params.set('ratingMin', ratingMinInput.value);
   if (ratingMaxInput.value) params.set('ratingMax', ratingMaxInput.value);
   if (openFilterInput.value !== 'all') params.set('open', openFilterInput.value);
+  if (selectedKeywords.length) params.set('keywords', selectedKeywords.join(','));
 
   return params;
 }
@@ -857,6 +935,7 @@ async function searchPlaces(lat, lng) {
 
   const params = new URLSearchParams({ lat, lng, radius, q: query });
   if (selectedCities.length) params.set('city', selectedCities.join(','));
+  if (selectedKeywords.length) params.set('keywords', selectedKeywords.join(','));
 
   try {
     const res = await fetch(`/api/search?${params}`);
@@ -1019,6 +1098,11 @@ function restoreSearchFromUrl() {
   const city = params.get('city');
   if (city) {
     city.split(',').forEach((c) => addCity(c));
+  }
+
+  const keywords = params.get('keywords');
+  if (keywords) {
+    keywords.split(',').forEach((k) => addKeyword(k));
   }
 
   searchPlaces(lat, lng);
