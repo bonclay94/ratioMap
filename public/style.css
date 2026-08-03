@@ -710,6 +710,16 @@ select:focus-visible {
   background: var(--surface);
 }
 
+.control-panel .chip-range input[type="time"] {
+  width: auto;
+  padding: 4px 2px;
+  font-size: 12px;
+  background: var(--surface);
+  border: none;
+  color: var(--text);
+  border-radius: 8px;
+}
+
 /* ---------- Results list (Maps-style place cards) ---------- */
 
 .results {

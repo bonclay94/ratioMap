@@ -285,27 +285,64 @@ function guessCategory(types) {
   return first ? first.replace(/_/g, ' ') : null;
 }
 
-// Texte de recherche enrichi pour le filtre mots-clés : la Text Search
-// initiale ne renvoie ni avis ni description, il faut donc un appel Place
-// Details (payant) par résultat quand un filtre mots-clés est actif.
-async function fetchPlaceSearchableText(placeId) {
+// Données enrichies pour les filtres mots-clés / horaires précis : la Text
+// Search initiale ne renvoie ni avis ni créneaux d'ouverture détaillés, il
+// faut donc un appel Place Details (payant) par résultat. On combine les
+// deux besoins en un seul appel quand les deux filtres sont actifs en même
+// temps, pour ne pas doubler le coût.
+async function fetchPlaceExtraDetails(placeId, { withReviews, withHours }) {
   try {
+    const fields = ['name', 'types'];
+    if (withReviews) fields.push('reviews');
+    if (withHours) fields.push('opening_hours');
+
     const url = new URL('https://maps.googleapis.com/maps/api/place/details/json');
     url.searchParams.set('place_id', placeId);
-    url.searchParams.set('fields', 'name,types,reviews');
+    url.searchParams.set('fields', fields.join(','));
     url.searchParams.set('language', 'fr');
     url.searchParams.set('key', API_KEY);
 
     const apiRes = await fetch(url);
     const data = await apiRes.json();
-    if (data.status !== 'OK') return '';
+    if (data.status !== 'OK') return { text: '', periods: null };
 
     const r = data.result;
-    const reviewsText = (r.reviews || []).map((rev) => rev.text || '').join(' ');
-    return `${r.name || ''} ${(r.types || []).join(' ')} ${reviewsText}`;
+    const reviewsText = withReviews ? (r.reviews || []).map((rev) => rev.text || '').join(' ') : '';
+    return {
+      text: `${r.name || ''} ${(r.types || []).join(' ')} ${reviewsText}`,
+      periods: withHours ? r.opening_hours?.periods || null : null,
+    };
   } catch {
-    return '';
+    return { text: '', periods: null };
   }
+}
+
+// Convertit "HHMM" (format Google) ou "HH:MM" en minutes depuis minuit.
+function toMinutes(time) {
+  const digits = time.replace(':', '');
+  return Number(digits.slice(0, 2)) * 60 + Number(digits.slice(2, 4));
+}
+
+// `periods` (format Google) : chaque créneau a un jour+heure d'ouverture et,
+// sauf ouvert 24h/24, un jour+heure de fermeture qui peut tomber le
+// lendemain (ex: ouvert mardi 18h -> fermé mercredi 1h). On raisonne en
+// minutes depuis lundi 00:00 sur deux semaines consécutives pour gérer ce
+// chevauchement sans cas particulier.
+function isOpenAt(periods, targetDay, targetMinutes) {
+  if (!periods || !periods.length) return null;
+  const WEEK = 7 * 1440;
+  const target = targetDay * 1440 + targetMinutes;
+
+  return periods.some((period) => {
+    if (!period.open) return false;
+    if (!period.close) return true; // ouvert 24h/24 et 7j/7
+
+    const start = period.open.day * 1440 + toMinutes(period.open.time);
+    let end = period.close.day * 1440 + toMinutes(period.close.time);
+    if (end <= start) end += WEEK;
+
+    return (target >= start && target < end) || (target + WEEK >= start && target + WEEK < end);
+  });
 }
 
 app.get('/api/place-details', async (req, res) => {
@@ -407,7 +444,7 @@ const MAX_CITIES = 3;
 
 app.get('/api/search', async (req, res) => {
   try {
-    const { lat, lng, radius = 5000, q, city, keywords } = req.query;
+    const { lat, lng, radius = 5000, q, city, keywords, day, time } = req.query;
     if (!lat || !lng) {
       return res.status(400).json({ error: 'Paramètres lat et lng requis' });
     }
@@ -466,24 +503,37 @@ app.get('/api/search', async (req, res) => {
       })
       .sort((a, b) => b.score - a.score);
 
-    // Filtre mots-clés (optionnel) : cherche dans le nom, la catégorie et les
-    // avis Google (5 derniers) de chaque résultat, via un appel Place Details
+    // Filtres mots-clés / horaires précis (optionnels) : la Text Search ne
+    // renvoie ni avis ni créneaux détaillés, il faut un appel Place Details
     // supplémentaire par restaurant — payant et plus lent, donc uniquement
-    // déclenché quand l'utilisateur a explicitement renseigné des mots-clés.
+    // déclenché quand l'utilisateur a explicitement renseigné l'un des deux.
     const keywordList = keywords
       ? keywords.split(',').map((k) => normalize(k.trim())).filter(Boolean)
       : [];
+    const wantsHoursFilter = day !== undefined && day !== '' && !!time;
 
     let finalPlaces = places;
-    if (keywordList.length) {
-      const withText = await Promise.all(
-        places.map(async (p) => ({
-          place: p,
-          haystack: normalize(`${p.name} ${await fetchPlaceSearchableText(p.placeId)}`),
-        }))
+    if (keywordList.length || wantsHoursFilter) {
+      const targetDay = Number(day);
+      const targetMinutes = wantsHoursFilter ? toMinutes(time) : null;
+
+      const enriched = await Promise.all(
+        places.map(async (p) => {
+          const extra = await fetchPlaceExtraDetails(p.placeId, {
+            withReviews: keywordList.length > 0,
+            withHours: wantsHoursFilter,
+          });
+          return {
+            place: p,
+            haystack: normalize(`${p.name} ${extra.text}`),
+            openAtTarget: wantsHoursFilter ? isOpenAt(extra.periods, targetDay, targetMinutes) : null,
+          };
+        })
       );
-      finalPlaces = withText
-        .filter(({ haystack }) => keywordList.some((k) => haystack.includes(k)))
+
+      finalPlaces = enriched
+        .filter(({ haystack }) => !keywordList.length || keywordList.some((k) => haystack.includes(k)))
+        .filter(({ openAtTarget }) => !wantsHoursFilter || openAtTarget === true)
         .map(({ place }) => place);
     }
 

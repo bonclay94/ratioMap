@@ -18,6 +18,8 @@ const ratingMaxInput = document.getElementById('rating-max');
 const openFilterInput = document.getElementById('open-filter');
 const keywordInput = document.getElementById('keyword-input');
 const keywordTagsContainer = document.getElementById('keyword-tags-input');
+const dayFilterInput = document.getElementById('day-filter');
+const timeFilterInput = document.getElementById('time-filter');
 
 const MAX_CITIES = 3;
 const DEPARTMENT_PATTERN = /^\d{2,3}$/;
@@ -727,6 +729,12 @@ function updateDisplayAndSyncUrl() {
 
 sortSelect.addEventListener('change', updateDisplayAndSyncUrl);
 openFilterInput.addEventListener('change', updateDisplayAndSyncUrl);
+// Filtre jour/heure : nécessite un appel Place Details par résultat (comme
+// les mots-clés), donc relance une vraie recherche plutôt qu'un simple
+// re-filtrage local.
+[dayFilterInput, timeFilterInput].forEach((input) => {
+  input.addEventListener('change', rerunSearchIfActive);
+});
 [reviewsMinInput, reviewsMaxInput, ratingMinInput, ratingMaxInput].forEach((input) => {
   input.addEventListener('input', updateDisplayAndSyncUrl);
 });
@@ -870,6 +878,10 @@ function buildSearchParams() {
   if (ratingMaxInput.value) params.set('ratingMax', ratingMaxInput.value);
   if (openFilterInput.value !== 'all') params.set('open', openFilterInput.value);
   if (selectedKeywords.length) params.set('keywords', selectedKeywords.join(','));
+  if (dayFilterInput.value && timeFilterInput.value) {
+    params.set('day', dayFilterInput.value);
+    params.set('time', timeFilterInput.value);
+  }
 
   return params;
 }
@@ -936,6 +948,10 @@ async function searchPlaces(lat, lng) {
   const params = new URLSearchParams({ lat, lng, radius, q: query });
   if (selectedCities.length) params.set('city', selectedCities.join(','));
   if (selectedKeywords.length) params.set('keywords', selectedKeywords.join(','));
+  if (dayFilterInput.value && timeFilterInput.value) {
+    params.set('day', dayFilterInput.value);
+    params.set('time', timeFilterInput.value);
+  }
 
   try {
     const res = await fetch(`/api/search?${params}`);
@@ -1094,6 +1110,8 @@ function restoreSearchFromUrl() {
   if (params.get('ratingMin')) ratingMinInput.value = params.get('ratingMin');
   if (params.get('ratingMax')) ratingMaxInput.value = params.get('ratingMax');
   if (params.get('open')) openFilterInput.value = params.get('open');
+  if (params.get('day')) dayFilterInput.value = params.get('day');
+  if (params.get('time')) timeFilterInput.value = params.get('time');
 
   const city = params.get('city');
   if (city) {
