@@ -7,6 +7,7 @@ const querySuggestionsEl = document.getElementById('query-suggestions');
 const addressInput = document.getElementById('address-input');
 const cityInput = document.getElementById('city-input');
 const cityTagsContainer = document.getElementById('city-tags-input');
+const cityAddBtn = document.getElementById('city-add-btn');
 const filterToggleBtn = document.getElementById('filter-toggle');
 const filterPanelEl = document.getElementById('filter-panel');
 const shareBtn = document.getElementById('share-btn');
@@ -504,6 +505,7 @@ function renderCityTags() {
   const atLimit = selectedCities.length >= MAX_CITIES;
   cityInput.hidden = atLimit;
   cityInput.placeholder = atLimit ? '' : 'Ajouter une ville…';
+  cityAddBtn.hidden = atLimit;
 }
 
 function normalizeCityInput(rawName) {
@@ -561,6 +563,8 @@ cityInput.addEventListener('keydown', (e) => {
     removeCity(selectedCities[selectedCities.length - 1]);
   }
 });
+
+cityAddBtn.addEventListener('click', () => addCity(cityInput.value));
 
 // --- Gestion des tags de mots-clés (max 5) ---
 // Contrairement aux autres filtres du panneau (qui re-filtrent juste les
@@ -1142,3 +1146,66 @@ function loadGoogleMapsScript(apiKey) {
 }
 
 initAutocomplete();
+
+// --- Publicité (Google AdSense) ---
+// Remplis ADSENSE_CLIENT_ID et ADSENSE_SLOT_ID une fois le compte AdSense
+// validé (Google fournit ces identifiants dans le tableau de bord). Tant que
+// ADSENSE_CLIENT_ID est vide, aucun script publicitaire n'est chargé et le
+// bandeau de consentement ne s'affiche pas.
+const ADSENSE_CLIENT_ID = ''; // ex: 'ca-pub-1234567890123456'
+const ADSENSE_SLOT_ID = ''; // ex: '1234567890'
+const AD_CONSENT_KEY = 'ratiomap-ad-consent'; // 'accepted' | 'declined'
+
+function initAds() {
+  if (!ADSENSE_CLIENT_ID) return;
+
+  const consent = localStorage.getItem(AD_CONSENT_KEY);
+  if (consent === 'accepted') {
+    loadAdSense();
+    return;
+  }
+  if (consent === 'declined') return;
+
+  const banner = document.getElementById('cookie-consent');
+  if (!banner) return;
+  banner.hidden = false;
+
+  document.getElementById('cookie-accept').addEventListener('click', () => {
+    localStorage.setItem(AD_CONSENT_KEY, 'accepted');
+    banner.hidden = true;
+    loadAdSense();
+  });
+
+  document.getElementById('cookie-decline').addEventListener('click', () => {
+    localStorage.setItem(AD_CONSENT_KEY, 'declined');
+    banner.hidden = true;
+  });
+}
+
+function loadAdSense() {
+  const slot = document.getElementById('ad-slot');
+  if (!slot) return;
+
+  const loaderScript = document.createElement('script');
+  loaderScript.async = true;
+  loaderScript.crossOrigin = 'anonymous';
+  loaderScript.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`;
+
+  const ins = document.createElement('ins');
+  ins.className = 'adsbygoogle';
+  ins.style.display = 'block';
+  ins.setAttribute('data-ad-client', ADSENSE_CLIENT_ID);
+  ins.setAttribute('data-ad-slot', ADSENSE_SLOT_ID);
+  ins.setAttribute('data-ad-format', 'auto');
+  ins.setAttribute('data-full-width-responsive', 'true');
+
+  slot.hidden = false;
+  slot.appendChild(ins);
+
+  loaderScript.onload = () => {
+    (window.adsbygoogle = window.adsbygoogle || []).push({});
+  };
+  document.head.appendChild(loaderScript);
+}
+
+initAds();

@@ -61,6 +61,7 @@
             <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><rect x="3" y="8" width="6" height="10"/><rect x="11" y="3" width="6" height="15"/></svg>
           </span>
           <input id="city-input" type="text" placeholder="Ville, département (91, 75…) ou arrondissement (Paris 1er, 75001…) — 3 max" autocomplete="off" />
+          <button id="city-add-btn" type="button" class="tags-add-btn" aria-label="Ajouter">+</button>
         </div>
       </div>
 
@@ -146,6 +147,8 @@
     </div>
 
     <section id="results" class="results"></section>
+
+    <div id="ad-slot" class="ad-slot" hidden></div>
 
     <section id="place-detail" class="place-detail" hidden>
       <button id="detail-back" type="button" class="detail-back">
@@ -266,6 +269,17 @@
   <div class="map-pane">
     <div id="map" class="map"></div>
   </div>
+  </div>
+
+  <div id="cookie-consent" class="cookie-consent" hidden role="dialog" aria-label="Consentement cookies publicitaires">
+    <p>
+      RatioMap affiche quelques publicités discrètes pour rester gratuit et sans compte.
+      Ça implique des cookies publicitaires. <a href="privacy.html">En savoir plus</a>
+    </p>
+    <div class="cookie-consent-actions">
+      <button id="cookie-decline" type="button" class="cookie-btn cookie-btn-ghost">Refuser</button>
+      <button id="cookie-accept" type="button" class="cookie-btn cookie-btn-accent">Accepter</button>
+    </div>
   </div>
 
   <script src="app.js"></script>
