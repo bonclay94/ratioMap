@@ -64,7 +64,7 @@ test('search, decimal filter, details and sharing work without a map key', async
   await page.goto('/');
   await page.getByRole('combobox', { name: 'Que cherchez-vous ?' }).fill('Café');
   await page.getByLabel('Autour de').fill('Paris');
-  await page.getByRole('button', { name: 'Explorer les lieux' }).click();
+  await page.getByRole('button', { name: 'Rechercher' }).click();
   await expect(page.getByRole('heading', { name: '1 lieu à découvrir' })).toBeVisible();
   await page.getByRole('button', { name: /Café du test/ }).click();
   await expect(page.getByRole('dialog', { name: 'Café du test' })).toBeVisible();

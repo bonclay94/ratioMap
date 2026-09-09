@@ -83,7 +83,7 @@ input::placeholder {
   top: 1rem;
 }
 .app-header {
-  height: 78px;
+  height: 60px;
   display: flex;
   align-items: center;
   gap: 2.5rem;
@@ -97,8 +97,8 @@ input::placeholder {
   gap: 0.65rem;
   text-decoration: none;
   font-size: 1.45rem;
-  font-weight: 780;
-  letter-spacing: -1px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
   flex-shrink: 0;
 }
 .brand img {
@@ -106,7 +106,7 @@ input::placeholder {
   height: 35px;
 }
 .brand-accent {
-  color: var(--accent);
+  color: var(--text);
 }
 .header-caption {
   font-size: 0.875rem;
@@ -123,9 +123,9 @@ input::placeholder {
 }
 .workspace {
   display: grid;
-  grid-template-columns: 440px minmax(0, 1fr);
-  height: calc(100dvh - 78px);
-  min-height: 620px;
+  grid-template-columns: 420px minmax(0, 1fr);
+  height: calc(100dvh - 60px);
+  min-height: 0;
 }
 .sidebar {
   display: flex;
@@ -137,7 +137,7 @@ input::placeholder {
   scrollbar-width: thin;
 }
 .search-section {
-  padding: 2rem 1.75rem 1.5rem;
+  padding: 1.5rem 1.5rem 1.25rem;
 }
 .eyebrow {
   font-size: 0.75rem;
@@ -146,10 +146,10 @@ input::placeholder {
   color: var(--text-secondary);
 }
 h1 {
-  font-size: 2.15rem;
+  font-size: 1.6rem;
   line-height: 1.15;
-  letter-spacing: -1.1px;
-  margin: 0.65rem 0;
+  letter-spacing: -0.6px;
+  margin: 0 0 0.4rem;
 }
 .intro {
   color: var(--text-secondary);
@@ -157,7 +157,7 @@ h1 {
   line-height: 1.6;
 }
 .search-form {
-  margin-top: 1.75rem;
+  margin-top: 1.25rem;
   display: flex;
   flex-direction: column;
   gap: 0.625rem;
@@ -172,10 +172,10 @@ h1 {
   align-items: center;
   gap: 0.65rem;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 3px;
   background: var(--surface);
   padding: 0 0.875rem;
-  min-height: 50px;
+  min-height: 46px;
 }
 .input-wrap:focus-within {
   border-color: var(--accent);
@@ -189,7 +189,7 @@ h1 {
   border: 0;
   outline: none !important;
   background: transparent;
-  min-height: 48px;
+  min-height: 44px;
   font-size: 1rem;
 }
 .search-form > label:not(:first-child) {
@@ -201,7 +201,7 @@ h1 {
   flex-shrink: 0;
   border: 0;
   background: transparent;
-  border-radius: 8px;
+  border-radius: 3px;
   color: var(--text-secondary);
 }
 .icon-button:hover {
@@ -225,7 +225,7 @@ h1 {
 select {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 7px;
+  border-radius: 3px;
   padding: 0.55rem;
   min-height: 40px;
 }
@@ -241,14 +241,14 @@ select {
   color: var(--accent);
 }
 .primary-button {
-  min-height: 50px;
+  min-height: 46px;
   padding: 0.75rem 1rem;
   border: 0;
-  border-radius: 10px;
+  border-radius: 3px;
   background: var(--accent);
   color: #fff;
   font-weight: 650;
-  box-shadow: 0 3px 8px #c93d2020;
+  box-shadow: none;
 }
 .primary-button:hover {
   background: var(--accent-strong);
@@ -256,14 +256,17 @@ select {
 .quick-searches {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-top: 1rem;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
 }
 .quick-searches button {
-  padding: 0.4rem 0.65rem;
+  padding: 0.4rem;
   min-height: 36px;
-  border: 1px solid var(--border);
-  border-radius: 7px;
+  border: 0;
+  border-radius: 3px;
   background: var(--surface);
   font-size: 0.8125rem;
   color: var(--text-secondary);
@@ -274,10 +277,10 @@ select {
   background: var(--accent-soft);
 }
 .results-section {
-  padding: 1.4rem 1.75rem;
+  padding: 1.25rem 1.5rem;
   border-top: 1px solid var(--border);
   flex: 1;
-  background: var(--canvas);
+  background: var(--surface);
 }
 .section-heading {
   display: flex;
@@ -299,8 +302,9 @@ select {
   border-radius: 5px;
 }
 .empty-state {
-  padding: 2.5rem 0.5rem;
-  text-align: center;
+  padding: 1.75rem 0;
+  text-align: left;
+  border-top: 1px solid var(--border);
   color: var(--text-secondary);
 }
 .empty-symbol {
@@ -325,7 +329,6 @@ select {
   font-size: 0.875rem;
   line-height: 1.7;
   max-width: 310px;
-  margin: auto;
 }
 .app-footer {
   display: flex;
@@ -363,22 +366,7 @@ select {
   flex-direction: column;
   text-align: center;
   padding: 2rem 2rem 12rem;
-  background-image: radial-gradient(var(--border) 1px, transparent 1px);
-  background-size: 22px 22px;
-}
-.map-compass {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 22px;
-  width: 82px;
-  height: 82px;
-  margin-bottom: 1.5rem;
-  box-shadow: var(--shadow);
-  color: var(--accent);
-  transform: rotate(-8deg);
+  background: var(--canvas);
 }
 .map-empty h2 {
   font-size: 1.4rem;
@@ -400,7 +388,7 @@ select {
   background: var(--surface);
   padding: 0.8rem 1rem;
   border: 1px solid var(--border);
-  border-radius: 9px;
+  border-radius: 3px;
   box-shadow: var(--shadow);
   font-size: 0.8125rem;
   display: flex;
@@ -417,33 +405,27 @@ select {
 }
 .method-card {
   position: absolute;
-  right: 1.5rem;
+  left: 1.5rem;
   bottom: 2.5rem;
-  width: 290px;
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--accent);
-  border-radius: 10px;
-  padding: 1.25rem;
+  max-width: 320px;
+  padding: 0.85rem 1rem;
+  border-left: 2px solid var(--accent);
   background: var(--surface);
-  box-shadow: var(--shadow);
 }
 .method-card p {
-  font-size: 1.0625rem;
-  line-height: 1.45;
-  margin: 0.8rem 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0.5rem 0 0;
 }
-.method-card > span:last-child {
-  font-size: 0.8125rem;
-  line-height: 1.7;
-  color: var(--text-secondary);
-  display: block;
+.method-card .text-button {
+  padding-left: 0;
 }
 .header-link:hover {
   color: var(--accent);
 }
 @media (min-width: 1500px) {
   .workspace {
-    grid-template-columns: 490px 1fr;
+    grid-template-columns: 460px 1fr;
   }
   .search-section,
   .results-section {
@@ -473,7 +455,7 @@ select {
 }
 @media (max-width: 740px) {
   .app-header {
-    height: 66px;
+    height: 60px;
     padding: 0 1.2rem;
     gap: 1rem;
   }
@@ -491,7 +473,7 @@ select {
     display: flex;
     flex-direction: column;
     height: auto;
-    min-height: calc(100dvh - 66px);
+    min-height: calc(100dvh - 60px);
   }
   .sidebar {
     overflow: visible;
@@ -525,7 +507,7 @@ select {
     padding: 2rem 0.5rem;
   }
   h1 {
-    font-size: 2rem;
+    font-size: 1.6rem;
   }
 }
 @media (prefers-color-scheme: dark) {

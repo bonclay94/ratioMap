@@ -1,4 +1,4 @@
-import { ChevronRight, Compass, MapPin, SearchX, Star } from 'lucide-react';
+import { ChevronRight, MapPin, SearchX, Star } from 'lucide-react';
 import type { Place } from '../../shared/types';
 
 const number = new Intl.NumberFormat('fr-FR');
@@ -39,13 +39,10 @@ export function Results({
   if (!searched && !busy)
     return (
       <div className="empty-state">
-        <span className="empty-symbol">
-          <Compass size={28} />
-        </span>
-        <h3>Tout commence par un lieu.</h3>
+        <h3>Définissez votre recherche.</h3>
         <p>
-          Choisissez ce que vous cherchez et une zone. Nous croisons notes et nombre d’avis pour
-          vous aider à comparer.
+          Indiquez une activité et une adresse. Les lieux seront classés selon leur note pondérée
+          par le nombre d’avis.
         </p>
       </div>
     );

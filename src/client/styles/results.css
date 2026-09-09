@@ -4,24 +4,23 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0;
 }
 .place-card {
   width: 100%;
   display: block;
   text-align: left;
-  padding: 1rem;
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  padding: 1.1rem 0.5rem;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
   background: var(--surface);
-  transition:
-    border-color 0.15s,
-    box-shadow 0.15s;
+  transition: background-color 0.15s;
 }
 .place-card:hover,
 .place-card.is-active {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 1px var(--accent);
+  background: var(--accent-soft);
+  box-shadow: inset 2px 0 var(--accent);
 }
 .place-topline {
   display: flex;
@@ -34,9 +33,8 @@
   font-variant-numeric: tabular-nums;
   font-weight: 700;
   color: var(--text-secondary);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 0.18rem 0.3rem;
+  min-width: 1.5rem;
+  font-family: ui-monospace, monospace;
 }
 .place-category {
   color: var(--text-secondary);
@@ -100,8 +98,7 @@
   align-items: center;
   gap: 0.5rem;
   margin-top: 0.9rem;
-  border-top: 1px solid var(--border);
-  padding-top: 0.75rem;
+  padding-top: 0;
 }
 .place-rating {
   display: flex;
@@ -129,10 +126,9 @@
   align-items: center;
   gap: 0.4rem;
   margin-left: auto;
-  background: var(--accent-soft);
-  color: var(--accent);
-  border-radius: 6px;
-  padding: 0.4rem 0.5rem;
+  color: var(--text);
+  border-left: 1px solid var(--border);
+  padding: 0 0 0 0.6rem;
   white-space: nowrap;
 }
 .ratio-pill > span {
@@ -141,7 +137,8 @@
   letter-spacing: 0.06em;
 }
 .ratio-pill strong {
-  font-size: 0.9375rem;
+  font-size: 1rem;
+  font-family: ui-monospace, monospace;
   font-variant-numeric: tabular-nums;
 }
 .place-distance + .ratio-pill {
@@ -209,13 +206,13 @@
 }
 .skeleton-list {
   display: grid;
-  gap: 0.75rem;
+  gap: 0;
 }
 .skeleton-card {
   background: var(--surface);
   border: 1px solid var(--border);
   padding: 1.3rem;
-  border-radius: 12px;
+  border-radius: 3px;
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
@@ -242,7 +239,7 @@
   }
 }
 .results-attribution {
-  text-align: center;
+  text-align: left;
   color: var(--text-secondary);
   font-size: 0.75rem;
   line-height: 1.6;

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Compass, Expand, LoaderCircle } from 'lucide-react';
+import { Expand, LoaderCircle } from 'lucide-react';
 import type { Place, PublicConfig, SearchState } from '../../shared/types';
 import { isDepartment } from '../../shared/locations';
 import { requestJson } from '../api';
@@ -312,14 +312,7 @@ export default function GoogleMap({
       />
       {(!ready || error) && (
         <div className="map-empty">
-          <span className="map-compass">
-            <Compass size={36} />
-          </span>
-          <h2>
-            {search
-              ? 'Vos bonnes adresses restent dans la liste.'
-              : 'Votre quartier a de bonnes adresses.'}
-          </h2>
+          <h2>{unavailable ? 'Carte indisponible' : 'Chargement de la carte'}</h2>
           <p>
             {error ||
               (config && !config.mapsApiKey
@@ -342,7 +335,7 @@ export default function GoogleMap({
         <span className="legend-dot" />
         {search
           ? `${places.length} lieu${places.length > 1 ? 'x' : ''} · ${search.draft.cities.length ? 'zones sélectionnées' : `rayon de ${search.draft.radius / 1000} km`}`
-          : 'Des lieux classés avec du recul.'}
+          : 'Carte des lieux'}
       </div>
       {ready && !error && (
         <button
@@ -359,17 +352,10 @@ export default function GoogleMap({
       {boundaryNotice && <p className="boundary-notice">{boundaryNotice}</p>}
       {!search && (
         <div className="method-card">
-          <span className="eyebrow">LE RATIO, EN CLAIR</span>
-          <p>
-            5 étoiles et 2 avis ?<br />
-            <strong>Ça ne raconte pas toute l’histoire.</strong>
-          </p>
-          <span>
-            Le score pondère la note par le nombre d’avis. Une base plus solide pour faire votre
-            choix.
-          </span>
+          <span className="eyebrow">Lecture du classement</span>
+          <p>Le ratio pondère la note par le nombre d’avis.</p>
           <button type="button" className="text-button" onClick={onMethod}>
-            Comprendre le calcul ↗
+            Voir la méthode ↗
           </button>
         </div>
       )}

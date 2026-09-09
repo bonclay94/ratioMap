@@ -64,9 +64,9 @@ export function App() {
             Ratio<span className="brand-accent">Map</span>
           </span>
         </a>
-        <span className="header-caption">Une bonne note. Assez d’avis. Le bon choix.</span>
+        <span className="header-caption">Notes, avis & géographie</span>
         <button className="header-link" type="button" onClick={() => setMethodOpen(true)}>
-          Comprendre le ratio <ArrowUpRight size={16} />
+          Méthode de classement <ArrowUpRight size={16} />
         </button>
       </header>
       <main className="workspace">
@@ -106,11 +106,11 @@ export function App() {
           <section className="results-section" aria-label="Résultats de recherche" aria-busy={busy}>
             <div className="results-heading">
               <div>
-                <p className="eyebrow">{active ? 'VOTRE SÉLECTION' : 'À VOUS DE JOUER'}</p>
+                <p className="eyebrow">Résultats</p>
                 <h2>
                   {active
-                    ? `${search.places.length} lieu${search.places.length > 1 ? 'x' : ''} à découvrir`
-                    : 'Votre prochaine bonne adresse'}
+                    ? `${search.places.length} lieu${search.places.length > 1 ? 'x' : ''}`
+                    : 'Aucune recherche en cours'}
                 </h2>
               </div>
               {active && (
@@ -184,7 +184,7 @@ export function App() {
                 <LoaderCircle size={18} className="spin" />
                 {search.phase === 'locating'
                   ? 'Recherche de votre adresse…'
-                  : 'Nous comparons les lieux…'}
+                  : 'Recherche des lieux…'}
                 {active && <span>Résultats précédents ci-dessous.</span>}
               </p>
             )}

@@ -210,7 +210,7 @@
   display: block;
   padding: 1rem;
   background: var(--canvas);
-  border-radius: 8px;
+  border-radius: 3px;
   border: 1px solid var(--border);
   font-size: 0.875rem;
   margin-top: 1rem;
@@ -226,7 +226,7 @@
   padding: 1rem;
   background: var(--canvas);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 3px;
 }
 .score-example span {
   display: block;
@@ -262,6 +262,6 @@
   padding: 1rem 2rem;
   background: var(--surface);
   box-shadow: var(--shadow);
-  border-radius: 8px;
+  border-radius: 3px;
   z-index: 30;
 }

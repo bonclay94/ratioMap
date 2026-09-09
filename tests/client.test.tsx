@@ -153,7 +153,7 @@ describe('accessible controls and safe external content', () => {
       target: { value: 'Café' },
     });
     fireEvent.change(screen.getByLabelText('Autour de'), { target: { value: 'Paris' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Explorer les lieux' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Rechercher' }));
     fireEvent.click(await screen.findByRole('button', { name: new RegExp(place.name) }));
     expect(await screen.findByRole('dialog', { name: place.name })).toBeInTheDocument();
     expect(await screen.findByText(details.reviews[0].text)).toBeInTheDocument();

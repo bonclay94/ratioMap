@@ -34,9 +34,8 @@ export function SearchForm({
   const showZones = zoneOpen || draft.cities.length > 0;
   return (
     <section className="search-section">
-      <p className="eyebrow">LES BONNES ADRESSES, AUTOUR DE VOUS</p>
-      <h1>Ça vaut le détour.</h1>
-      <p className="intro">Trouvez votre prochain lieu de confiance.</p>
+      <h1>Comparer les lieux.</h1>
+      <p className="intro">Une note, un nombre d’avis, une zone.</p>
       <form className="search-form" onSubmit={submit} aria-label="Rechercher des lieux">
         <label htmlFor="search-query">Que cherchez-vous ?</label>
         <Combobox
@@ -122,10 +121,11 @@ export function SearchForm({
         )}
         <button className="primary-button" type="submit" disabled={unavailable}>
           <Search size={18} />
-          {busy ? 'Relancer la recherche' : 'Explorer les lieux'}
+          {busy ? 'Relancer la recherche' : 'Rechercher'}
         </button>
       </form>
       <div className="quick-searches" aria-label="Idées de recherche">
+        <span>Essayer :</span>
         {['Restaurant', 'Café', 'Dentiste', 'Coiffeur'].map((label) => (
           <button
             type="button"

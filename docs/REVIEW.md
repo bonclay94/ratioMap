@@ -37,3 +37,7 @@ Aucun appel Google payant, aucun déploiement Netlify et aucune écriture dans l
 2. Lancer `npm run dev` avec les clés existantes et vérifier une recherche par rayon, puis par département ; comparer liste, carte et fiche.
 3. Vérifier les filtres locaux, le bouton Appliquer, le partage et le retour navigateur ; parcourir l’interface sur mobile et au clavier.
 4. Exécuter la suite Playwright documentée dans le README, puis valider l’intégration réelle sur un environnement Netlify de prévisualisation avant publication.
+
+## Révision graphique après retour utilisateur
+
+Direction « atlas de comparaison » appliquée : palette papier/encre, liste continue à la place des cartes arrondies, chiffres tabulaires, commandes compactes et suppression des slogans/décorations. Voir la décision 9. Les 78 tests, le contrôle TypeScript et le build passent après ces changements. Bundle principal actualisé : 311,03 kB / 96,33 kB gzip ; CSS : 23,78 kB / 5,33 kB gzip. La réserve sur la validation visuelle reste applicable.

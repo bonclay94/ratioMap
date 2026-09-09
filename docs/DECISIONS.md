@@ -57,3 +57,11 @@ Le verrouillage npm a été actualisé. L’override `qs >= 6.16.0` corrige la d
 ## 8. Compromis de poids client
 
 React et la validation partagée augmentent le JavaScript par rapport au client vanilla initial. Le bundle principal représente 96,52 kB gzip ; la carte et les dialogues sont chargés séparément. Cette refonte ne revendique donc pas une diminution générale du poids ou un gain mesuré de rendu. Les améliorations de performance vérifiées concernent surtout les appels externes bornés, l’annulation, les filtres locaux, la réutilisation des marqueurs et le cache HTTP des ressources compilées. Le chargement du SDK Google reste un coût externe distinct.
+
+## 9. Direction graphique : atlas de comparaison
+
+À la demande de l’utilisateur, la direction graphique abandonne les codes génériques de page promotionnelle. L’interface est traitée comme un outil de consultation : fond papier, texte encre, séparateurs fins, contrôles à faible rayon de courbure et orange réservé aux actions et à la sélection.
+
+Les résultats deviennent des lignes continues et numérotées ; leur ratio est composé en chiffres tabulaires pour faciliter la comparaison. L’en-tête et le formulaire prennent moins de place au profit du travail cartographique. Les slogans, la boussole décorative et le fond pointillé disparaissent. Les exemples de recherche deviennent des raccourcis textuels ; l’explication du classement reste accessible mais secondaire. Les états d’attente et d’indisponibilité donnent une information factuelle.
+
+Le thème sombre et les tailles des cibles tactiles sont conservés. Cette direction demande encore une review visuelle réelle ; les tests fonctionnels et la compilation ne permettent pas de juger seuls la qualité graphique.

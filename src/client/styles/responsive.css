@@ -9,7 +9,7 @@
     display: none;
   }
   .view-map .map-pane {
-    height: calc(100dvh - 66px - 76px);
+    height: calc(100dvh - 60px - 76px);
     min-height: 320px;
   }
   .mobile-view-switch {
@@ -21,7 +21,7 @@
     z-index: 15;
     padding: 0.25rem;
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 3px;
     background: var(--surface);
     box-shadow: var(--shadow);
     gap: 0.25rem;
@@ -31,7 +31,7 @@
     min-height: 44px;
     padding: 0.6rem 1rem;
     border: 0;
-    border-radius: 8px;
+    border-radius: 3px;
     color: var(--text-secondary);
     background: transparent;
     font-size: 0.875rem;
@@ -52,7 +52,7 @@
   .modal {
     max-width: calc(100vw - 1rem);
     max-height: calc(100dvh - 1rem);
-    border-radius: 14px;
+    border-radius: 3px;
   }
   .modal-heading,
   .method-content,
