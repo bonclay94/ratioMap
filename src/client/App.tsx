@@ -1,6 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import {
-  ArrowUpRight,
   Info,
   List,
   LoaderCircle,
@@ -22,9 +21,6 @@ const GoogleMap = lazy(() => import('./maps/GoogleMap'));
 const PlaceDetail = lazy(() =>
   import('./components/PlaceDetail').then((m) => ({ default: m.PlaceDetail })),
 );
-const MethodDialog = lazy(() =>
-  import('./components/MethodDialog').then((m) => ({ default: m.MethodDialog })),
-);
 const ShareDialog = lazy(() =>
   import('./components/ShareDialog').then((m) => ({ default: m.ShareDialog })),
 );
@@ -34,7 +30,6 @@ export function App() {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [hoverId, setHoverId] = useState<string | null>(null);
-  const [methodOpen, setMethodOpen] = useState(false);
   const [shareState, setShareState] = useState<SearchState | null>(null);
   const [mobileView, setMobileView] = useState<'list' | 'map'>('list');
   const busy = search.phase !== 'idle';
@@ -65,9 +60,6 @@ export function App() {
           </span>
         </a>
         <span className="header-caption">Notes, avis & géographie</span>
-        <button className="header-link" type="button" onClick={() => setMethodOpen(true)}>
-          Méthode de classement <ArrowUpRight size={16} />
-        </button>
       </header>
       <main className="workspace">
         <aside className="sidebar" aria-label="Recherche et résultats">
@@ -206,9 +198,6 @@ export function App() {
             {active && (
               <div className="results-attribution">
                 <p>Données Google Maps · sélection non exhaustive</p>
-                <button type="button" className="text-button" onClick={() => setMethodOpen(true)}>
-                  <Info size={14} /> Comment les lieux sont-ils classés ?
-                </button>
                 {search.response.attributions?.map((credit, i) => (
                   <p key={i}>{credit}</p>
                 ))}
@@ -242,7 +231,6 @@ export function App() {
               onHover={setHoverId}
               visible={mobileView === 'map'}
               onAddress={(address) => search.setDraft((d) => ({ ...d, address }))}
-              onMethod={() => setMethodOpen(true)}
             />
           </Suspense>
         </section>
@@ -277,7 +265,6 @@ export function App() {
             onClose={() => setSelectedId(null)}
           />
         )}{' '}
-        {methodOpen && <MethodDialog onClose={() => setMethodOpen(false)} />}{' '}
         {shareState && <ShareDialog state={shareState} onClose={() => setShareState(null)} />}
       </Suspense>
     </div>

@@ -15,7 +15,6 @@ interface Props {
   onHover: (id: string | null) => void;
   visible: boolean;
   onAddress: (address: string) => void;
-  onMethod: () => void;
 }
 type MarkerEntry = {
   marker: google.maps.Marker | google.maps.marker.AdvancedMarkerElement;
@@ -32,7 +31,6 @@ export default function GoogleMap({
   onHover,
   visible,
   onAddress,
-  onMethod,
 }: Props) {
   const element = useRef<HTMLDivElement>(null);
   const mapRef = useRef<google.maps.Map | null>(null);
@@ -354,9 +352,6 @@ export default function GoogleMap({
         <div className="method-card">
           <span className="eyebrow">Lecture du classement</span>
           <p>Le ratio pondère la note par le nombre d’avis.</p>
-          <button type="button" className="text-button" onClick={onMethod}>
-            Voir la méthode ↗
-          </button>
         </div>
       )}
     </>

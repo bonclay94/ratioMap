@@ -80,7 +80,6 @@ describe('map / result identity', () => {
       onSelect,
       onHover: vi.fn(),
       onAddress: vi.fn(),
-      onMethod: vi.fn(),
       visible: false,
     };
     const unlocated = { ...place, placeId: 'no-coordinates', lat: null, lng: null };
