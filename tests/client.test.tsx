@@ -154,12 +154,7 @@ describe('accessible controls and safe external content', () => {
     });
     fireEvent.change(screen.getByLabelText('Autour de'), { target: { value: 'Paris' } });
     fireEvent.click(screen.getByRole('button', { name: 'Rechercher' }));
-    await screen.findByRole('button', { name: new RegExp(place.name) });
-    fireEvent.click(screen.getByRole('button', { name: 'Réduire les résultats' }));
-    expect(screen.queryByRole('button', { name: new RegExp(place.name) })).not.toBeInTheDocument();
-    expect(screen.getByLabelText('Autour de')).toHaveValue('Paris');
-    fireEvent.click(screen.getByRole('button', { name: '1 résultat' }));
-    fireEvent.click(screen.getByRole('button', { name: new RegExp(place.name) }));
+    fireEvent.click(await screen.findByRole('button', { name: new RegExp(place.name) }));
     expect(await screen.findByRole('dialog', { name: place.name })).toBeInTheDocument();
     expect(await screen.findByText(details.reviews[0].text)).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Fermer' }));

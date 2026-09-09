@@ -4,7 +4,7 @@ import {
   Info,
   List,
   LoaderCircle,
-  ChevronDown,
+  Map,
   Share2,
   SlidersHorizontal,
   TriangleAlert,
@@ -36,15 +36,12 @@ export function App() {
   const [hoverId, setHoverId] = useState<string | null>(null);
   const [methodOpen, setMethodOpen] = useState(false);
   const [shareState, setShareState] = useState<SearchState | null>(null);
-  const [resultsOpen, setResultsOpen] = useState(false);
+  const [mobileView, setMobileView] = useState<'list' | 'map'>('list');
   const busy = search.phase !== 'idle';
   const selectedPlace = search.places.find((p) => p.placeId === selectedId);
   useEffect(() => {
     setSelectedId(null);
   }, [search.response]);
-  useEffect(() => {
-    if (busy || search.executed) setResultsOpen(true);
-  }, [busy, search.response]);
   const activeFilters = [
     search.filters.ratingMin,
     search.filters.ratingMax,
@@ -56,7 +53,7 @@ export function App() {
   ].filter((v) => v !== '').length;
   const active = search.executed;
   return (
-    <div className="app-shell map-workspace">
+    <div className={`app-shell view-${mobileView}`}>
       <a className="skip-link" href="#search-query">
         Aller à la recherche
       </a>
@@ -73,192 +70,159 @@ export function App() {
         </button>
       </header>
       <main className="workspace">
-        <div className="workspace-overlays">
-          <aside
-            id="results-panel"
-            className="sidebar"
-            aria-label="Résultats"
-            hidden={!resultsOpen}
-          >
-            <section
-              className="results-section"
-              aria-label="Résultats de recherche"
-              aria-busy={busy}
-            >
-              <button
-                className="panel-close text-button"
-                type="button"
-                onClick={() => setResultsOpen(false)}
-                aria-label="Réduire les résultats"
-              >
-                Réduire <ChevronDown size={16} />
-              </button>
-              <div className="results-heading">
-                <div>
-                  <p className="eyebrow">Résultats</p>
-                  <h2>
-                    {active
-                      ? `${search.places.length} lieu${search.places.length > 1 ? 'x' : ''}`
-                      : 'Aucune recherche en cours'}
-                  </h2>
-                </div>
-                {active && (
-                  <button
-                    className="icon-button"
-                    type="button"
-                    aria-label="Partager cette recherche"
-                    onClick={() => setShareState(active)}
-                  >
-                    <Share2 size={19} />
-                  </button>
-                )}
+        <aside className="sidebar" aria-label="Recherche et résultats">
+          <SearchForm
+            draft={search.draft}
+            onChange={search.setDraft}
+            onSubmit={() => search.submit()}
+            onGeolocate={() => void search.geolocate()}
+            locating={search.locating}
+            busy={busy}
+            unavailable={search.config?.searchAvailable === false}
+          />
+          {search.config?.searchAvailable === false && (
+            <div className="service-notice" role="status">
+              <TriangleAlert size={18} />
+              <p>La recherche est momentanément indisponible. Réessayez plus tard.</p>
+            </div>
+          )}
+          {search.configError && (
+            <div className="service-notice" role="status">
+              <Info size={18} />
+              <p>La carte n’a pas pu être préparée. Vous pouvez essayer la recherche.</p>
+            </div>
+          )}
+          {search.error && (
+            <div className="error-message" role="alert">
+              <TriangleAlert size={18} />
+              <p>{search.error}</p>
+            </div>
+          )}
+          {search.notice && (
+            <p className="notice" role="status">
+              {search.notice}
+            </p>
+          )}
+          <section className="results-section" aria-label="Résultats de recherche" aria-busy={busy}>
+            <div className="results-heading">
+              <div>
+                <p className="eyebrow">Résultats</p>
+                <h2>
+                  {active
+                    ? `${search.places.length} lieu${search.places.length > 1 ? 'x' : ''}`
+                    : 'Aucune recherche en cours'}
+                </h2>
               </div>
               {active && (
-                <p className="search-context">
-                  {active.draft.q} ·{' '}
-                  {active.draft.cities.length
-                    ? active.draft.cities.map(locationLabel).join(', ')
-                    : `${active.draft.radius / 1000} km · ${active.draft.address || 'Position choisie'}`}
-                </p>
-              )}
-              {search.dirty && !busy && (
-                <p className="draft-notice">
-                  Critères modifiés. Lancez une recherche pour les appliquer.
-                </p>
-              )}
-              <div className="result-controls">
-                <label htmlFor="sort-select">
-                  <span className="sr-only">Trier les résultats</span>
-                  <select
-                    id="sort-select"
-                    value={search.filters.sort}
-                    disabled={busy}
-                    onChange={(e) =>
-                      search.changeFilters({
-                        ...search.filters,
-                        sort: e.target.value as Filters['sort'],
-                      })
-                    }
-                  >
-                    <option value="score">Meilleur ratio</option>
-                    <option value="rating">Meilleure note</option>
-                    <option value="reviewCount">Plus d’avis</option>
-                    <option value="distance">Plus proches</option>
-                  </select>
-                </label>
                 <button
-                  className={`secondary-button ${filtersOpen ? 'is-active' : ''}`}
+                  className="icon-button"
                   type="button"
-                  onClick={() => setFiltersOpen((v) => !v)}
-                  aria-expanded={filtersOpen}
-                  aria-controls="filters-panel"
+                  aria-label="Partager cette recherche"
+                  onClick={() => setShareState(active)}
                 >
-                  <SlidersHorizontal size={15} /> Filtres
-                  {activeFilters > 0 && <span className="filter-count">{activeFilters}</span>}
+                  <Share2 size={19} />
                 </button>
-              </div>
-              {filtersOpen && (
-                <FiltersPanel
-                  filters={search.filters}
-                  draft={search.draft}
-                  onFilters={search.changeFilters}
-                  onDraft={search.setDraft}
-                  onSubmit={() => search.submit()}
-                  error={search.filterError}
-                  busy={busy}
-                />
-              )}
-              {busy && (
-                <p className="loading-message" role="status">
-                  <LoaderCircle size={18} className="spin" />
-                  {search.phase === 'locating'
-                    ? 'Recherche de votre adresse…'
-                    : 'Recherche des lieux…'}
-                  {active && <span>Résultats précédents ci-dessous.</span>}
-                </p>
-              )}
-              {search.response.warnings?.map((warning, i) => (
-                <p key={i} className="warning-message" role="status">
-                  {warning}
-                </p>
-              ))}
-              <Results
-                places={search.places}
-                searched={Boolean(active)}
-                busy={busy}
-                hasUnfiltered={search.response.places.length > 0}
-                selectedId={selectedId || hoverId}
-                onSelect={setSelectedId}
-                onHover={setHoverId}
-                onReset={() => search.changeFilters({ ...DEFAULT_FILTERS })}
-              />
-              {active && (
-                <div className="results-attribution">
-                  <p>Données Google Maps · sélection non exhaustive</p>
-                  <button type="button" className="text-button" onClick={() => setMethodOpen(true)}>
-                    <Info size={14} /> Comment les lieux sont-ils classés ?
-                  </button>
-                  {search.response.attributions?.map((credit, i) => (
-                    <p key={i}>{credit}</p>
-                  ))}
-                </div>
-              )}
-            </section>
-          </aside>
-          <div className="search-dock">
-            <div className="dock-notices">
-              {search.config?.searchAvailable === false && (
-                <div className="service-notice" role="status">
-                  <TriangleAlert size={18} />
-                  <p>La recherche est momentanément indisponible. Réessayez plus tard.</p>
-                </div>
-              )}
-              {search.configError && (
-                <div className="service-notice" role="status">
-                  <Info size={18} />
-                  <p>La carte n’a pas pu être préparée. Vous pouvez essayer la recherche.</p>
-                </div>
-              )}
-              {search.error && (
-                <div className="error-message" role="alert">
-                  <TriangleAlert size={18} />
-                  <p>{search.error}</p>
-                </div>
-              )}
-              {search.notice && (
-                <p className="notice" role="status">
-                  {search.notice}
-                </p>
               )}
             </div>
-            <div className="dock-controls">
-              <SearchForm
-                draft={search.draft}
-                onChange={search.setDraft}
-                onSubmit={() => search.submit()}
-                onGeolocate={() => void search.geolocate()}
-                locating={search.locating}
-                busy={busy}
-                unavailable={search.config?.searchAvailable === false}
-              />
+            {active && (
+              <p className="search-context">
+                {active.draft.q} ·{' '}
+                {active.draft.cities.length
+                  ? active.draft.cities.map(locationLabel).join(', ')
+                  : `${active.draft.radius / 1000} km · ${active.draft.address || 'Position choisie'}`}
+              </p>
+            )}
+            {search.dirty && !busy && (
+              <p className="draft-notice">
+                Critères modifiés. Lancez une recherche pour les appliquer.
+              </p>
+            )}
+            <div className="result-controls">
+              <label htmlFor="sort-select">
+                <span className="sr-only">Trier les résultats</span>
+                <select
+                  id="sort-select"
+                  value={search.filters.sort}
+                  disabled={busy}
+                  onChange={(e) =>
+                    search.changeFilters({
+                      ...search.filters,
+                      sort: e.target.value as Filters['sort'],
+                    })
+                  }
+                >
+                  <option value="score">Meilleur ratio</option>
+                  <option value="rating">Meilleure note</option>
+                  <option value="reviewCount">Plus d’avis</option>
+                  <option value="distance">Plus proches</option>
+                </select>
+              </label>
               <button
-                className="dock-results-toggle"
+                className={`secondary-button ${filtersOpen ? 'is-active' : ''}`}
                 type="button"
-                aria-expanded={resultsOpen}
-                aria-controls="results-panel"
-                onClick={() => setResultsOpen((v) => !v)}
+                onClick={() => setFiltersOpen((v) => !v)}
+                aria-expanded={filtersOpen}
+                aria-controls="filters-panel"
               >
-                <List size={19} />
-                <span>
-                  {search.executed
-                    ? `${search.places.length} résultat${search.places.length > 1 ? 's' : ''}`
-                    : 'Résultats'}
-                </span>
-                <ChevronDown size={16} className={resultsOpen ? '' : 'chevron-up'} />
+                <SlidersHorizontal size={15} /> Filtres
+                {activeFilters > 0 && <span className="filter-count">{activeFilters}</span>}
               </button>
             </div>
-          </div>
-        </div>
+            {filtersOpen && (
+              <FiltersPanel
+                filters={search.filters}
+                draft={search.draft}
+                onFilters={search.changeFilters}
+                onDraft={search.setDraft}
+                onSubmit={() => search.submit()}
+                error={search.filterError}
+                busy={busy}
+              />
+            )}
+            {busy && (
+              <p className="loading-message" role="status">
+                <LoaderCircle size={18} className="spin" />
+                {search.phase === 'locating'
+                  ? 'Recherche de votre adresse…'
+                  : 'Recherche des lieux…'}
+                {active && <span>Résultats précédents ci-dessous.</span>}
+              </p>
+            )}
+            {search.response.warnings?.map((warning, i) => (
+              <p key={i} className="warning-message" role="status">
+                {warning}
+              </p>
+            ))}
+            <Results
+              places={search.places}
+              searched={Boolean(active)}
+              busy={busy}
+              hasUnfiltered={search.response.places.length > 0}
+              selectedId={selectedId || hoverId}
+              onSelect={setSelectedId}
+              onHover={setHoverId}
+              onReset={() => search.changeFilters({ ...DEFAULT_FILTERS })}
+            />
+            {active && (
+              <div className="results-attribution">
+                <p>Données Google Maps · sélection non exhaustive</p>
+                <button type="button" className="text-button" onClick={() => setMethodOpen(true)}>
+                  <Info size={14} /> Comment les lieux sont-ils classés ?
+                </button>
+                {search.response.attributions?.map((credit, i) => (
+                  <p key={i}>{credit}</p>
+                ))}
+              </div>
+            )}
+          </section>
+          <div id="ad-slot" className="ad-slot" hidden aria-label="Publicité" />
+          <footer className="app-footer">
+            <a href="/legal.html">Mentions légales</a>
+            <a href="/privacy.html">Confidentialité</a>
+            <span>RatioMap · v2</span>
+            <AdsConsent config={search.config} />
+          </footer>
+        </aside>
         <section className="map-pane" aria-label="Carte des lieux">
           <Suspense
             fallback={
@@ -276,21 +240,29 @@ export function App() {
               selectedId={selectedId}
               onSelect={setSelectedId}
               onHover={setHoverId}
-              visible
+              visible={mobileView === 'map'}
               onAddress={(address) => search.setDraft((d) => ({ ...d, address }))}
               onMethod={() => setMethodOpen(true)}
             />
           </Suspense>
         </section>
       </main>
-
-      <footer className="app-footer">
-        <div id="ad-slot" className="ad-slot" hidden aria-label="Publicité" />
-        <a href="/legal.html">Mentions légales</a>
-        <a href="/privacy.html">Confidentialité</a>
-        <span>RatioMap · v2</span>
-        <AdsConsent config={search.config} />
-      </footer>
+      <nav className="mobile-view-switch" aria-label="Affichage des lieux">
+        <button
+          type="button"
+          aria-pressed={mobileView === 'list'}
+          onClick={() => setMobileView('list')}
+        >
+          <List size={18} /> Liste
+        </button>
+        <button
+          type="button"
+          aria-pressed={mobileView === 'map'}
+          onClick={() => setMobileView('map')}
+        >
+          <Map size={18} /> Carte
+        </button>
+      </nav>
       <Suspense
         fallback={
           <p className="dialog-loading" role="status">

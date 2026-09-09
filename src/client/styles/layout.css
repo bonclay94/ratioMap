@@ -246,7 +246,7 @@ select {
   border: 0;
   border-radius: 10px;
   background: var(--accent);
-  color: #fff;
+  color: #202020;
   font-weight: 650;
   box-shadow: none;
 }

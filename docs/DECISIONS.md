@@ -71,3 +71,7 @@ Le thème sombre et les tailles des cibles tactiles sont conservés. Cette direc
 L’utilisateur retient la proposition 02 du second aperçu, avec des angles plus doux et l’orange exact `#FF6200`. Cette décision remplace la direction atlas des passes précédentes : typographie Tahoma/Arial, surfaces neutres, carte occupant l’espace principal, barre de recherche ancrée en bas et résultats dans un panneau escamotable. Les grands panneaux ont des rayons de 18–20 px ; les champs et boutons, 10–12 px.
 
 La recherche ouvre les résultats ; les réduire ne supprime ni les critères ni les lieux chargés. Les commandes restent disponibles lorsque le panneau est fermé. Sur mobile, les champs et les commandes se réorganisent sur plusieurs lignes. Les détails restent dans un dialogue accessible. L’orange vif sert aux surfaces d’action et aux repères ; les textes sur ce fond sont sombres, et les liens utilisent une variante plus foncée en thème clair pour le contraste.
+
+## 11. Retour à la vue précédente
+
+Après essai, l’utilisateur préfère la vue antérieure à la disposition 02. La recherche et les résultats retrouvent leur panneau latéral gauche, avec la carte à droite et le basculement liste/carte sur mobile. Le panneau flottant et la barre basse sont retirés. L’orange `#FF6200` explicitement choisi reste en place, avec les textes contrastés et les angles adoucis.

@@ -90,16 +90,12 @@ test('restores legacy links independently of Maps and supports keyboard departme
   await expect(page.getByRole('button', { name: 'Retirer Essonne (91)' })).toBeVisible();
   await expect(page.getByLabel('Rayon')).toBeDisabled();
 });
-test('mobile results panel can be collapsed without losing the search', async ({
-  page,
-  isMobile,
-}) => {
+test('mobile list/map switching preserves the search', async ({ page, isMobile }) => {
   test.skip(!isMobile, 'Mobile view only');
   await page.goto('/?q=Caf%C3%A9&lat=48.85&lng=2.35&radius=5000');
   await expect(page.getByRole('heading', { name: '1 lieu' })).toBeVisible();
-  await page.getByRole('button', { name: 'Réduire les résultats' }).click();
-  await expect(page.getByRole('heading', { name: '1 lieu' })).not.toBeVisible();
+  await page.getByRole('button', { name: 'Carte', exact: true }).click();
   await expect(page.getByRole('region', { name: 'Carte des lieux' })).toBeVisible();
-  await page.getByRole('button', { name: '1 résultat', exact: true }).click();
+  await page.getByRole('button', { name: 'Liste', exact: true }).click();
   await expect(page.getByRole('heading', { name: '1 lieu' })).toBeVisible();
 });

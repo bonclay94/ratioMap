@@ -47,3 +47,7 @@ Direction « atlas de comparaison » appliquée : palette papier/encre, liste co
 Carte plein écran, recherche en bas et panneau de résultats escamotable intégrés sur la branche de refonte. Orange `#FF6200`, Tahoma/Arial, angles adoucis. La recherche par zone, les filtres, détails et partage restent disponibles. Le test d’intégration vérifie désormais également la fermeture/réouverture des résultats, la conservation de l’adresse et l’absence de nouvelle requête de recherche lors de cette manipulation. Le scénario Playwright mobile est adapté au nouveau panneau.
 
 Validation : 78 tests réussis, TypeScript et build réussis ; serveur de développement vérifié par HTTP sur `http://127.0.0.1:3000/`. Bundle principal : 310,86 kB / 96,16 kB gzip ; CSS : 28,53 kB / 6,17 kB gzip. Aperçu ouvert pour essai par l’utilisateur. Aucune validation visuelle navigateur par l’agent à ce stade, l’autorisation demandée restant sans réponse ; aucune requête Google payante effectuée pour les tests.
+
+## Retour à la vue précédente — 10 septembre 2026
+
+À la demande de l’utilisateur après essai, la disposition 02 est retirée : panneau recherche/résultats à gauche, carte à droite, navigation liste/carte sur mobile rétablis. Orange `#FF6200` conservé. Les 78 tests, le contrôle TypeScript et le build passent. La validation visuelle navigateur par l’agent reste non effectuée.
