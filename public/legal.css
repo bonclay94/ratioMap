@@ -1,3 +1,15 @@
+@import url('/theme.css');
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  color: var(--text);
+}
+a:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
 body {
   background: var(--canvas);
 }
@@ -12,7 +24,7 @@ body {
   display: inline-block;
   color: var(--accent);
   text-decoration: none;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 600;
   margin-bottom: 24px;
 }
@@ -31,14 +43,14 @@ body {
 }
 
 .legal-page h2 {
-  font-size: 15px;
+  font-size: 18px;
   margin: 0 0 8px;
   color: var(--text);
 }
 
 .legal-page p {
   margin: 0 0 10px;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.6;
   color: var(--text-secondary);
 }

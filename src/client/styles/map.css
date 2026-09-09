@@ -1,0 +1,42 @@
+.google-map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.map-fit {
+  position: absolute;
+  right: 1.5rem;
+  top: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.map-number {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #c93d20;
+  border: 2px solid white;
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  box-shadow: 0 3px 8px #0003;
+}
+.map-number.is-active {
+  background: #202a34;
+  transform: scale(1.15);
+}
+.boundary-notice {
+  position: absolute;
+  left: 1rem;
+  bottom: 2rem;
+  right: 4rem;
+  max-width: 400px;
+  background: var(--surface);
+  padding: 0.75rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}

@@ -1,0 +1,56 @@
+.mobile-view-switch {
+  display: none;
+}
+.ad-slot {
+  min-height: 90px;
+  margin: 1rem 1.5rem;
+}
+.consent-settings {
+  position: fixed;
+  bottom: 0.25rem;
+  left: 1.75rem;
+  z-index: 20;
+  border: 0;
+  background: var(--surface);
+  color: var(--text-secondary);
+  padding: 0.3rem;
+  font-size: 0.75rem;
+}
+.cookie-consent {
+  position: fixed;
+  bottom: 1rem;
+  left: 1rem;
+  max-width: 420px;
+  right: 1rem;
+  z-index: 50;
+  background: var(--surface);
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+.cookie-consent h2 {
+  font-size: 1rem;
+  margin-bottom: 0.6rem;
+}
+.cookie-consent p {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+.cookie-consent > div {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.cookie-consent button {
+  flex: 1;
+}
+.empty-state > .secondary-button {
+  margin-top: 1rem;
+}
+.quick-searches button[aria-pressed='true'] {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
