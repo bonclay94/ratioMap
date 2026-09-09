@@ -128,7 +128,7 @@ export default function GoogleMap({
         if (existing.marker instanceof google.maps.Marker)
           existing.marker.setLabel({
             text: String(i + 1),
-            color: '#fff',
+            color: '#202020',
             fontSize: '12px',
             fontWeight: '700',
           });
@@ -169,7 +169,7 @@ export default function GoogleMap({
         const icon = (active: boolean): google.maps.Symbol => ({
           path: google.maps.SymbolPath.CIRCLE,
           scale: active ? 18 : 15,
-          fillColor: active ? '#202a34' : '#c93d20',
+          fillColor: active ? '#ff8c45' : '#ff6200',
           fillOpacity: 1,
           strokeColor: '#fff',
           strokeWeight: 2,
@@ -179,7 +179,7 @@ export default function GoogleMap({
           position,
           title: p.name,
           icon: icon(false),
-          label: { text: String(i + 1), color: '#fff', fontSize: '12px', fontWeight: '700' },
+          label: { text: String(i + 1), color: '#202020', fontSize: '12px', fontWeight: '700' },
         });
         marker.addListener('click', () => callbacks.current.onSelect(p.placeId));
         marker.addListener('mouseover', () => callbacks.current.onHover(p.placeId));
@@ -242,10 +242,10 @@ export default function GoogleMap({
           map,
           center: search.center,
           radius: search.draft.radius,
-          strokeColor: '#c93d20',
+          strokeColor: '#ff6200',
           strokeOpacity: 0.6,
           strokeWeight: 1.5,
-          fillColor: '#c93d20',
+          fillColor: '#ff6200',
           fillOpacity: 0.045,
           clickable: false,
         });
@@ -270,9 +270,9 @@ export default function GoogleMap({
     setBoundaryNotice('');
     map.data.forEach((f) => map.data.remove(f));
     map.data.setStyle({
-      fillColor: '#c93d20',
+      fillColor: '#ff6200',
       fillOpacity: 0.05,
-      strokeColor: '#c93d20',
+      strokeColor: '#ff6200',
       strokeWeight: 1.5,
       clickable: false,
     });

@@ -65,3 +65,9 @@ React et la validation partagée augmentent le JavaScript par rapport au client 
 Les résultats deviennent des lignes continues et numérotées ; leur ratio est composé en chiffres tabulaires pour faciliter la comparaison. L’en-tête et le formulaire prennent moins de place au profit du travail cartographique. Les slogans, la boussole décorative et le fond pointillé disparaissent. Les exemples de recherche deviennent des raccourcis textuels ; l’explication du classement reste accessible mais secondaire. Les états d’attente et d’indisponibilité donnent une information factuelle.
 
 Le thème sombre et les tailles des cibles tactiles sont conservés. Cette direction demande encore une review visuelle réelle ; les tests fonctionnels et la compilation ne permettent pas de juger seuls la qualité graphique.
+
+## 10. Disposition retenue : carte plein écran, commandes en bas
+
+L’utilisateur retient la proposition 02 du second aperçu, avec des angles plus doux et l’orange exact `#FF6200`. Cette décision remplace la direction atlas des passes précédentes : typographie Tahoma/Arial, surfaces neutres, carte occupant l’espace principal, barre de recherche ancrée en bas et résultats dans un panneau escamotable. Les grands panneaux ont des rayons de 18–20 px ; les champs et boutons, 10–12 px.
+
+La recherche ouvre les résultats ; les réduire ne supprime ni les critères ni les lieux chargés. Les commandes restent disponibles lorsque le panneau est fermé. Sur mobile, les champs et les commandes se réorganisent sur plusieurs lignes. Les détails restent dans un dialogue accessible. L’orange vif sert aux surfaces d’action et aux repères ; les textes sur ce fond sont sombres, et les liens utilisent une variante plus foncée en thème clair pour le contraste.

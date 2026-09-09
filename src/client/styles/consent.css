@@ -50,7 +50,7 @@
   margin-top: 1rem;
 }
 .quick-searches button[aria-pressed='true'] {
-  color: var(--accent);
-  border-color: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent-ink);
   background: var(--accent-soft);
 }

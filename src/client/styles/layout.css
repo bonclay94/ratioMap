@@ -172,13 +172,13 @@ h1 {
   align-items: center;
   gap: 0.65rem;
   border: 1px solid var(--border);
-  border-radius: 3px;
+  border-radius: 10px;
   background: var(--surface);
   padding: 0 0.875rem;
   min-height: 46px;
 }
 .input-wrap:focus-within {
-  border-color: var(--accent);
+  border-color: var(--accent-ink);
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
 .input-wrap > svg {
@@ -201,12 +201,12 @@ h1 {
   flex-shrink: 0;
   border: 0;
   background: transparent;
-  border-radius: 3px;
+  border-radius: 10px;
   color: var(--text-secondary);
 }
 .icon-button:hover {
   background: var(--surface-2);
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 .search-options {
   display: flex;
@@ -225,7 +225,7 @@ h1 {
 select {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 3px;
+  border-radius: 10px;
   padding: 0.55rem;
   min-height: 40px;
 }
@@ -238,13 +238,13 @@ select {
   padding: 0.4rem;
 }
 .text-button:hover {
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 .primary-button {
   min-height: 46px;
   padding: 0.75rem 1rem;
   border: 0;
-  border-radius: 3px;
+  border-radius: 10px;
   background: var(--accent);
   color: #fff;
   font-weight: 650;
@@ -266,14 +266,14 @@ select {
   padding: 0.4rem;
   min-height: 36px;
   border: 0;
-  border-radius: 3px;
+  border-radius: 10px;
   background: var(--surface);
   font-size: 0.8125rem;
   color: var(--text-secondary);
 }
 .quick-searches button:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: var(--accent-ink);
+  color: var(--accent-ink);
   background: var(--accent-soft);
 }
 .results-section {
@@ -317,7 +317,7 @@ select {
   border-radius: 18px;
   background: var(--surface);
   border: 1px solid var(--border);
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 .empty-state h3 {
   font-size: 1rem;
@@ -388,7 +388,7 @@ select {
   background: var(--surface);
   padding: 0.8rem 1rem;
   border: 1px solid var(--border);
-  border-radius: 3px;
+  border-radius: 10px;
   box-shadow: var(--shadow);
   font-size: 0.8125rem;
   display: flex;
@@ -421,7 +421,7 @@ select {
   padding-left: 0;
 }
 .header-link:hover {
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 @media (min-width: 1500px) {
   .workspace {

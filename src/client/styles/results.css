@@ -212,7 +212,7 @@
   background: var(--surface);
   border: 1px solid var(--border);
   padding: 1.3rem;
-  border-radius: 3px;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   gap: 0.8rem;

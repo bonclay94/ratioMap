@@ -21,7 +21,7 @@
     z-index: 15;
     padding: 0.25rem;
     border: 1px solid var(--border);
-    border-radius: 3px;
+    border-radius: 10px;
     background: var(--surface);
     box-shadow: var(--shadow);
     gap: 0.25rem;
@@ -31,14 +31,14 @@
     min-height: 44px;
     padding: 0.6rem 1rem;
     border: 0;
-    border-radius: 3px;
+    border-radius: 10px;
     color: var(--text-secondary);
     background: transparent;
     font-size: 0.875rem;
     font-weight: 600;
   }
   .mobile-view-switch button[aria-pressed='true'] {
-    color: var(--accent);
+    color: var(--accent-ink);
     background: var(--accent-soft);
   }
   .app-footer {
@@ -52,7 +52,7 @@
   .modal {
     max-width: calc(100vw - 1rem);
     max-height: calc(100dvh - 1rem);
-    border-radius: 3px;
+    border-radius: 10px;
   }
   .modal-heading,
   .method-content,
@@ -127,7 +127,7 @@
     color: #f4bc61;
   }
   .ratio-pill {
-    color: var(--accent);
+    color: var(--accent-ink);
   }
   .map-compass {
     box-shadow: none;

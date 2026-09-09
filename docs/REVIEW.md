@@ -41,3 +41,9 @@ Aucun appel Google payant, aucun déploiement Netlify et aucune écriture dans l
 ## Révision graphique après retour utilisateur
 
 Direction « atlas de comparaison » appliquée : palette papier/encre, liste continue à la place des cartes arrondies, chiffres tabulaires, commandes compactes et suppression des slogans/décorations. Voir la décision 9. Les 78 tests, le contrôle TypeScript et le build passent après ces changements. Bundle principal actualisé : 311,03 kB / 96,33 kB gzip ; CSS : 23,78 kB / 5,33 kB gzip. La réserve sur la validation visuelle reste applicable.
+
+## Disposition 02 intégrée — 10 septembre 2026
+
+Carte plein écran, recherche en bas et panneau de résultats escamotable intégrés sur la branche de refonte. Orange `#FF6200`, Tahoma/Arial, angles adoucis. La recherche par zone, les filtres, détails et partage restent disponibles. Le test d’intégration vérifie désormais également la fermeture/réouverture des résultats, la conservation de l’adresse et l’absence de nouvelle requête de recherche lors de cette manipulation. Le scénario Playwright mobile est adapté au nouveau panneau.
+
+Validation : 78 tests réussis, TypeScript et build réussis ; serveur de développement vérifié par HTTP sur `http://127.0.0.1:3000/`. Bundle principal : 310,86 kB / 96,16 kB gzip ; CSS : 28,53 kB / 6,17 kB gzip. Aperçu ouvert pour essai par l’utilisateur. Aucune validation visuelle navigateur par l’agent à ce stade, l’autorisation demandée restant sans réponse ; aucune requête Google payante effectuée pour les tests.

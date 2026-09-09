@@ -16,14 +16,15 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  background: #c93d20;
+  background: #ff6200;
   border: 2px solid white;
-  color: #fff;
+  color: #202020;
   font-size: 0.8125rem;
   font-weight: 700;
   box-shadow: 0 3px 8px #0003;
 }
 .map-number.is-active {
+  color: #fff;
   background: #202a34;
   transform: scale(1.15);
 }

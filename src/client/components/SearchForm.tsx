@@ -34,46 +34,49 @@ export function SearchForm({
   const showZones = zoneOpen || draft.cities.length > 0;
   return (
     <section className="search-section">
-      <h1>Comparer les lieux.</h1>
-      <p className="intro">Une note, un nombre d’avis, une zone.</p>
+      <h1 className="sr-only">Rechercher des lieux sur la carte</h1>
       <form className="search-form" onSubmit={submit} aria-label="Rechercher des lieux">
-        <label htmlFor="search-query">Que cherchez-vous ?</label>
-        <Combobox
-          id="search-query"
-          value={draft.q}
-          onChange={(v) => change('q', v)}
-          required
-          maxLength={120}
-          placeholder="Restaurant, dentiste, coiffeur…"
-          leading={<Search size={18} />}
-          suggestions={
-            draft.q
-              ? QUERY_SUGGESTIONS.filter((s) => normalize(s).startsWith(normalize(draft.q)))
-                  .slice(0, 7)
-                  .map((s) => ({ value: s, label: s }))
-              : []
-          }
-        />
-        <label htmlFor="search-address">Autour de</label>
-        <div className="input-wrap">
-          <MapPin size={18} />
-          <input
-            id="search-address"
-            maxLength={300}
-            value={draft.address}
-            onChange={(e) => change('address', e.target.value)}
-            placeholder="Adresse, ville ou code postal"
-            autoComplete="off"
+        <div className="search-field">
+          <label htmlFor="search-query">Que cherchez-vous ?</label>
+          <Combobox
+            id="search-query"
+            value={draft.q}
+            onChange={(v) => change('q', v)}
+            required
+            maxLength={120}
+            placeholder="Restaurant, dentiste, coiffeur…"
+            leading={<Search size={18} />}
+            suggestions={
+              draft.q
+                ? QUERY_SUGGESTIONS.filter((s) => normalize(s).startsWith(normalize(draft.q)))
+                    .slice(0, 7)
+                    .map((s) => ({ value: s, label: s }))
+                : []
+            }
           />
-          <button
-            className="icon-button"
-            type="button"
-            disabled={locating}
-            onClick={onGeolocate}
-            aria-label="Utiliser ma position"
-          >
-            <LocateFixed size={19} className={locating ? 'spin' : ''} />
-          </button>
+        </div>
+        <div className="search-field">
+          <label htmlFor="search-address">Autour de</label>
+          <div className="input-wrap">
+            <MapPin size={18} />
+            <input
+              id="search-address"
+              maxLength={300}
+              value={draft.address}
+              onChange={(e) => change('address', e.target.value)}
+              placeholder="Adresse, ville ou code postal"
+              autoComplete="off"
+            />
+            <button
+              className="icon-button"
+              type="button"
+              disabled={locating}
+              onClick={onGeolocate}
+              aria-label="Utiliser ma position"
+            >
+              <LocateFixed size={19} className={locating ? 'spin' : ''} />
+            </button>
+          </div>
         </div>
         <div className="search-options">
           <label htmlFor="search-radius">
@@ -124,19 +127,6 @@ export function SearchForm({
           {busy ? 'Relancer la recherche' : 'Rechercher'}
         </button>
       </form>
-      <div className="quick-searches" aria-label="Idées de recherche">
-        <span>Essayer :</span>
-        {['Restaurant', 'Café', 'Dentiste', 'Coiffeur'].map((label) => (
-          <button
-            type="button"
-            key={label}
-            onClick={() => change('q', label)}
-            aria-pressed={draft.q === label}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
     </section>
   );
 }
