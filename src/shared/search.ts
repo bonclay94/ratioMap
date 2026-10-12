@@ -8,6 +8,7 @@ export const DEFAULT_FILTERS: Filters = {
   reviewsMax: '',
   ratingMin: '',
   ratingMax: '',
+  priceMax: '',
   open: 'all',
 };
 export const DEFAULT_DRAFT: SearchDraft = {
@@ -62,7 +63,16 @@ export const searchSchema = z
   });
 export type SearchInput = z.infer<typeof searchSchema>;
 
+export const PRICE_LABELS: Record<string, string> = {
+  '1': '€',
+  '2': '€€',
+  '3': '€€€',
+  '4': '€€€€',
+};
+
 export function validateFilters(filters: Filters): string | null {
+  if (filters.priceMax !== '' && !(filters.priceMax in PRICE_LABELS))
+    return 'Le prix maximum doit être compris entre 1 et 4.';
   for (const [low, high, max, label] of [
     [filters.ratingMin, filters.ratingMax, 5, 'notes'],
     [filters.reviewsMin, filters.reviewsMax, 100000000, 'avis'],
@@ -91,6 +101,10 @@ export function filterAndSort(places: Place[], filters: Filters): Place[] {
         (filters.ratingMax === '' || p.rating <= Number(filters.ratingMax)) &&
         (filters.reviewsMin === '' || p.reviewCount >= Number(filters.reviewsMin)) &&
         (filters.reviewsMax === '' || p.reviewCount <= Number(filters.reviewsMax)) &&
+        // Soft filter: a place without a price level is never excluded.
+        (filters.priceMax === '' ||
+          p.priceLevel === null ||
+          p.priceLevel <= Number(filters.priceMax)) &&
         (filters.open === 'all' ||
           (filters.open === 'open' ? p.openNow === true : p.openNow === false)),
     )
@@ -122,7 +136,7 @@ export function buildSearchParams(state: SearchState): URLSearchParams {
     p.set('day', d.day);
     p.set('time', d.time);
   }
-  for (const key of ['reviewsMin', 'reviewsMax', 'ratingMin', 'ratingMax'] as const)
+  for (const key of ['reviewsMin', 'reviewsMax', 'ratingMin', 'ratingMax', 'priceMax'] as const)
     if (f[key] !== '') p.set(key, f[key]);
   if (f.open !== 'all') p.set('open', f.open);
   return p;
@@ -141,6 +155,7 @@ export function parseSearchParams(p: URLSearchParams): SearchState | null {
     reviewsMax: p.get('reviewsMax') || '',
     ratingMin: p.get('ratingMin') || '',
     ratingMax: p.get('ratingMax') || '',
+    priceMax: p.get('priceMax') || '',
   };
   if (validateFilters(filters)) return null;
   return {

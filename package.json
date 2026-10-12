@@ -16,6 +16,7 @@
     "format:check": "prettier --check src tests docs public index.html server.js *.json *.mts .github"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.133.0",
     "@netlify/aws-lambda-compat": "^2.0.0",
     "@netlify/blobs": "^10.7.11",
     "dotenv": "^16.4.5",

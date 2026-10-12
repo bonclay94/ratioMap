@@ -47,6 +47,7 @@ export async function searchPlaces(
       lat: position?.lat ?? null,
       lng: position?.lng ?? null,
       distance: distance === null ? null : Math.round(distance),
+      priceLevel: p.price_level ?? null,
       mapsUrl: `https://www.google.com/maps/place/?q=place_id:${encodeURIComponent(p.place_id)}`,
     });
   }

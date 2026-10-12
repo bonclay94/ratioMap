@@ -255,3 +255,24 @@
 .advanced-actions .secondary-button {
   font-size: 0.75rem;
 }
+.natural-search {
+  display: grid;
+  gap: 0.45rem;
+  margin: 1rem 0;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.natural-search label {
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+.natural-search .input-wrap {
+  margin-top: 0.45rem;
+  padding-right: 0.4rem;
+}
+.interpretation ul {
+  margin: 0.5rem 0 0;
+  padding-left: 1.1rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}

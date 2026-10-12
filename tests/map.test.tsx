@@ -66,6 +66,7 @@ describe('map / result identity', () => {
       searchAvailable: true,
       adsenseClientId: null,
       adsenseSlotId: null,
+      aiAvailable: false,
     };
     const search = {
       draft: { ...DEFAULT_DRAFT, q: 'café' },

@@ -1,5 +1,5 @@
 import { RotateCcw } from 'lucide-react';
-import { DEFAULT_FILTERS } from '../../shared/search';
+import { DEFAULT_FILTERS, PRICE_LABELS } from '../../shared/search';
 import type { Filters, SearchDraft } from '../../shared/types';
 import { TagInput } from './TagInput';
 
@@ -80,6 +80,22 @@ export function FiltersPanel({ filters, draft, onFilters, onDraft, onSubmit, err
           />
         </label>
       </div>
+      <label className="filter-label" htmlFor="price-filter">
+        Prix maximum
+        <select
+          id="price-filter"
+          value={filters.priceMax}
+          onChange={(e) => onFilters({ ...filters, priceMax: e.target.value })}
+        >
+          <option value="">Tous les prix</option>
+          {Object.entries(PRICE_LABELS).map(([level, label]) => (
+            <option key={level} value={level}>
+              {label} maximum
+            </option>
+          ))}
+        </select>
+      </label>
+      <p className="field-hint">Les lieux sans prix renseigné par Google restent affichés.</p>
       <label className="filter-label" htmlFor="open-filter">
         Ouverture actuelle
         <select

@@ -18,11 +18,28 @@ import {
   type ShortLinkStore,
 } from './short-links';
 import { createBoundaryLoader } from './boundaries';
+import {
+  ClaudeSearchInterpreter,
+  DEFAULT_MODEL,
+  MAX_REQUEST_LENGTH,
+  type SearchInterpreter,
+} from './interpreter';
+import { createRateLimiter } from './rate-limit';
 
 export const REQUEST_SIGNAL = Symbol('ratiomap.requestSignal');
 
+function validTimeZone(timeZone: string | undefined): string {
+  try {
+    if (timeZone) new Intl.DateTimeFormat('fr-FR', { timeZone });
+    return timeZone || 'Europe/Paris';
+  } catch {
+    return 'Europe/Paris';
+  }
+}
+
 export interface AppOptions {
   provider?: PlacesProvider;
+  interpreter?: SearchInterpreter;
   store?: ShortLinkStore;
   env?: NodeJS.ProcessEnv;
   staticDirectory?: string;
@@ -40,6 +57,14 @@ export function createApp(options: AppOptions = {}) {
   const store =
     options.store ??
     (env.NETLIFY === 'true' ? new NetlifyShortLinkStore() : new MemoryShortLinkStore());
+  const model = /^[\w.-]{1,64}$/.test(env.ANTHROPIC_MODEL || '')
+    ? env.ANTHROPIC_MODEL!
+    : DEFAULT_MODEL;
+  const interpreter =
+    options.interpreter ?? new ClaudeSearchInterpreter(env.ANTHROPIC_API_KEY, model);
+  // Per instance and per client address; the Anthropic console spend limit is the real cap.
+  const clientLimit = createRateLimiter(8, 60_000);
+  const globalLimit = createRateLimiter(60, 60_000);
   const boundary = options.boundaryLoader ?? createBoundaryLoader();
   const app = express();
   app.disable('x-powered-by');
@@ -66,6 +91,7 @@ export function createApp(options: AppOptions = {}) {
       ? env.ADSENSE_CLIENT_ID!
       : null,
     adsenseSlotId: /^\d+$/.test(env.ADSENSE_SLOT_ID || '') ? env.ADSENSE_SLOT_ID! : null,
+    aiAvailable: Boolean(env.ANTHROPIC_API_KEY || options.interpreter),
   };
   api.get('/config', (_req, res) => {
     res.json(config);
@@ -107,6 +133,34 @@ export function createApp(options: AppOptions = {}) {
     '/search',
     asyncRoute(async (req, res) => {
       res.json(await searchPlaces(provider, searchSchema.parse(req.query), res.locals.signal));
+    }),
+  );
+  api.post(
+    '/interpret-search',
+    asyncRoute(async (req, res) => {
+      const body = z
+        .object({
+          text: z.string().trim().min(1).max(MAX_REQUEST_LENGTH),
+          timeZone: z.string().max(64).optional(),
+        })
+        .parse(req.body);
+      const address = String(req.headers['x-nf-client-connection-ip'] || req.ip || 'unknown');
+      const wait = Math.max(clientLimit(address), globalLimit('all'));
+      if (wait) {
+        res.set('Retry-After', String(wait));
+        throw new HttpError(
+          429,
+          'Trop de demandes à l’assistant. Réessayez dans un instant ou utilisez les champs ci-dessous.',
+          'AI_RATE_LIMITED',
+        );
+      }
+      res.json(
+        await interpreter.interpret(
+          body.text,
+          { now: new Date(), timeZone: validTimeZone(body.timeZone) },
+          res.locals.signal,
+        ),
+      );
     }),
   );
   api.get(

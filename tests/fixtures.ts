@@ -14,6 +14,7 @@ export const place: Place = {
   lat: 48.8566,
   lng: 2.3522,
   distance: 100,
+  priceLevel: null,
   mapsUrl: 'https://www.google.com/maps/place/?q=place_id:place-one',
 };
 export const rawPlace: RawPlace = {

@@ -75,3 +75,13 @@ La recherche ouvre les résultats ; les réduire ne supprime ni les critères ni
 ## 11. Retour à la vue précédente
 
 Après essai, l’utilisateur préfère la vue antérieure à la disposition 02. La recherche et les résultats retrouvent leur panneau latéral gauche, avec la carte à droite et le basculement liste/carte sur mobile. Le panneau flottant et la barre basse sont retirés. L’orange `#FF6200` explicitement choisi reste en place, avec les textes contrastés et les angles adoucis.
+
+## 12. Assistant de recherche en langage naturel
+
+Le champ « Décrire ma recherche » envoie une phrase (200 caractères maximum) à `POST /api/interpret-search`. Claude ne fait que remplir le formulaire : requête, zone, rayon, créneau, ouvert maintenant, note/avis minimum, prix maximum, tri. Il ne classe et ne recommande aucun lieu ; le ratio reste calculé comme avant. L’utilisateur vérifie le formulaire rempli puis lance lui-même la recherche, car celle-ci coûte plusieurs appels Google.
+
+Ce qui n’a pas de donnée Google fiable (calme, ambiance, nombre de personnes, terrasse…) n’est pas transformé en mot-clé, ce qui exclurait à tort des lieux dont les cinq avis fournis n’en parlent pas. Ces éléments sont listés comme « non pris en charge, ignoré ».
+
+Le prix utilise `price_level` de Places Legacy, déjà présent dans la réponse de recherche. Le filtre est souple : un lieu sans prix n’est jamais exclu, et « pas cher » correspond à `€€` au plus.
+
+Garde-fous : clé et modèle côté serveur (`ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`, Haiku 5.5 par défaut), `max_tokens` borné, effort bas, sortie JSON validée puis assainie champ par champ, assistant masqué sans clé (`aiAvailable`), limite par adresse et par instance. Comme pour Google (§4), cette limite n’est pas un quota distribué : le plafond de dépense de la console Anthropic reste la protection financière. Les tests injectent un faux client et n’appellent jamais l’API. Le résumé des avis est écarté pour l’instant.

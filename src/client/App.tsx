@@ -14,6 +14,7 @@ import type { Filters, SearchState } from '../shared/types';
 import { useSearch } from './useSearch';
 import { SearchForm } from './components/SearchForm';
 import { FiltersPanel } from './components/FiltersPanel';
+import { NaturalSearch } from './components/NaturalSearch';
 import { Results } from './components/Results';
 import { AdsConsent } from './components/AdsConsent';
 
@@ -42,6 +43,7 @@ export function App() {
     search.filters.ratingMax,
     search.filters.reviewsMin,
     search.filters.reviewsMax,
+    search.filters.priceMax,
     search.filters.open === 'all' ? '' : search.filters.open,
     ...search.draft.keywords,
     search.draft.day,
@@ -71,6 +73,11 @@ export function App() {
             locating={search.locating}
             busy={busy}
             unavailable={search.config?.searchAvailable === false}
+            assistant={
+              search.config?.aiAvailable && (
+                <NaturalSearch draft={search.draft} onApply={search.applyCriteria} />
+              )
+            }
           />
           {search.config?.searchAvailable === false && (
             <div className="service-notice" role="status">

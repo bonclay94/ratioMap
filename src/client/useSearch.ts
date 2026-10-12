@@ -155,6 +155,13 @@ export function useSearch() {
       window.history.replaceState(null, '', `/?${buildSearchParams(state)}`);
     }
   }
+  /** Fills the form from the assistant. Nothing is searched until the user submits. */
+  function applyCriteria(nextDraft: SearchDraft, nextFilters: Filters) {
+    setDraft(nextDraft);
+    setFilters(nextFilters);
+    setError('');
+    setNotice('');
+  }
   async function geolocate() {
     if (!navigator.geolocation) {
       setError('La géolocalisation n’est pas disponible. Saisissez une adresse.');
@@ -207,6 +214,7 @@ export function useSearch() {
     setDraft,
     filters,
     changeFilters,
+    applyCriteria,
     executed,
     response,
     places,

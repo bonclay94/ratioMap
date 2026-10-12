@@ -28,6 +28,7 @@ const rawPlaceSchema = z.object({
   user_ratings_total: z.number().int().nonnegative().default(0),
   geometry: z.object({ location: coordinates }).optional(),
   business_status: z.string().optional(),
+  price_level: z.number().int().min(0).max(4).optional(),
   opening_hours: hours.optional(),
   types: z.array(z.string()).default([]),
 });

@@ -28,13 +28,15 @@ La compilation produit `dist/client` (fichiers publics) et `dist/server.cjs` (se
 
 ## Variables
 
-| Variable | Usage |
-| --- | --- |
-| `GOOGLE_MAPS_API_KEY` | Clé serveur pour Geocoding et Places Legacy ; jamais envoyée au navigateur. |
-| `GOOGLE_MAPS_BROWSER_KEY` | Clé publique restreinte aux domaines autorisés, pour Maps JavaScript et l’autocomplétion. |
-| `GOOGLE_MAPS_MAP_ID` | Facultatif ; permet les marqueurs avancés. Les marqueurs classiques sont utilisés autrement. |
-| `PORT` | Port local/Node ; 3000 par défaut. |
-| `ADSENSE_CLIENT_ID`, `ADSENSE_SLOT_ID` | Facultatifs ; aucun script publicitaire si l’un manque ou sans consentement. |
+| Variable                               | Usage                                                                                                                                                      |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GOOGLE_MAPS_API_KEY`                  | Clé serveur pour Geocoding et Places Legacy ; jamais envoyée au navigateur.                                                                                |
+| `GOOGLE_MAPS_BROWSER_KEY`              | Clé publique restreinte aux domaines autorisés, pour Maps JavaScript et l’autocomplétion.                                                                  |
+| `GOOGLE_MAPS_MAP_ID`                   | Facultatif ; permet les marqueurs avancés. Les marqueurs classiques sont utilisés autrement.                                                               |
+| `ANTHROPIC_API_KEY`                    | Facultatif ; clé serveur de l’assistant « Décrire ma recherche ». Sans elle, l’assistant est masqué. Plafond de dépense à fixer dans la console Anthropic. |
+| `ANTHROPIC_MODEL`                      | Facultatif ; modèle de l’assistant, `claude-haiku-5-5` par défaut (famille Claude 5).                                                                      |
+| `PORT`                                 | Port local/Node ; 3000 par défaut.                                                                                                                         |
+| `ADSENSE_CLIENT_ID`, `ADSENSE_SLOT_ID` | Facultatifs ; aucun script publicitaire si l’un manque ou sans consentement.                                                                               |
 
 Ne jamais préfixer une clé serveur par `VITE_`. Les clés existantes restent compatibles ; Places New n’est pas requis par cette refonte.
 

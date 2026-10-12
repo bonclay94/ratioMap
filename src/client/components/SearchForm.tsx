@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, type ReactNode } from 'react';
 import { ChevronDown, LocateFixed, MapPin, Search, SlidersHorizontal } from 'lucide-react';
 import { QUERY_SUGGESTIONS, normalize } from '../../shared/locations';
 import { RADII } from '../../shared/search';
@@ -14,6 +14,7 @@ interface Props {
   locating: boolean;
   busy: boolean;
   unavailable: boolean;
+  assistant?: ReactNode;
 }
 export function SearchForm({
   draft,
@@ -23,6 +24,7 @@ export function SearchForm({
   locating,
   busy,
   unavailable,
+  assistant,
 }: Props) {
   const [zoneOpen, setZoneOpen] = useState(false);
   const change = <K extends keyof SearchDraft>(key: K, value: SearchDraft[K]) =>
@@ -36,6 +38,7 @@ export function SearchForm({
     <section className="search-section">
       <h1>Comparer les lieux.</h1>
       <p className="intro">Une note, un nombre d’avis, une zone.</p>
+      {assistant}
       <form className="search-form" onSubmit={submit} aria-label="Rechercher des lieux">
         <label htmlFor="search-query">Que cherchez-vous ?</label>
         <Combobox

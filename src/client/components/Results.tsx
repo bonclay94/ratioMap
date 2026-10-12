@@ -1,4 +1,5 @@
 import { ChevronRight, MapPin, SearchX, Star } from 'lucide-react';
+import { PRICE_LABELS } from '../../shared/search';
 import type { Place } from '../../shared/types';
 
 const number = new Intl.NumberFormat('fr-FR');
@@ -112,6 +113,11 @@ export function Results({
               </span>
               {p.distance !== null && (
                 <span className="place-distance">{formatDistance(p.distance)}</span>
+              )}
+              {p.priceLevel !== null && p.priceLevel > 0 && (
+                <span className="place-distance" aria-label={`Prix ${p.priceLevel} sur 4`}>
+                  {PRICE_LABELS[p.priceLevel]}
+                </span>
               )}
               <span
                 className="ratio-pill"

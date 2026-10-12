@@ -14,6 +14,8 @@ export interface Place {
   lat: number | null;
   lng: number | null;
   distance: number | null;
+  /** Google price level, 0 (free) to 4 (very expensive); null when Google gives none. */
+  priceLevel: number | null;
   mapsUrl: string;
 }
 export interface Review {
@@ -50,6 +52,7 @@ export interface PublicConfig {
   searchAvailable: boolean;
   adsenseClientId: string | null;
   adsenseSlotId: string | null;
+  aiAvailable: boolean;
 }
 export type SortKey = 'score' | 'rating' | 'reviewCount' | 'distance';
 export interface Filters {
@@ -58,6 +61,8 @@ export interface Filters {
   reviewsMax: string;
   ratingMin: string;
   ratingMax: string;
+  /** '' or '1'..'4'. Soft: places without a price level are never excluded. */
+  priceMax: string;
   open: 'all' | 'open' | 'closed';
 }
 export interface SearchDraft {
@@ -73,6 +78,21 @@ export interface SearchState {
   draft: SearchDraft;
   filters: Filters;
   center: Coordinates | null;
+}
+/** Search criteria Claude extracted from a free-text request; every field is validated server-side. */
+export interface SearchInterpretation {
+  q: string;
+  address: string;
+  radius: number | null;
+  day: string;
+  time: string;
+  open: '' | 'open';
+  sort: '' | SortKey;
+  ratingMin: string;
+  reviewsMin: string;
+  priceMax: string;
+  /** Parts of the request the app cannot filter on (ambiance, party size…). */
+  unsupported: string[];
 }
 export interface OpeningPeriod {
   open: { day: number; time: string };
